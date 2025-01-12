@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Accordion,
@@ -110,8 +109,6 @@ const filterExampleData = [
 ];
 
 function ProductPage() {
-  const router = useRouter();
-
   return (
     <div className="flex px-[200px] py-[50px] gap-[20px]">
       <div className="w-[20%] bg-white h-fit flex flex-col items-center">
