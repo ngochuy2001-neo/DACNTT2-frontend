@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import HeaderBar from "./components/common/Header";
-import Footer from "./components/common/Footer";
 
 export const metadata: Metadata = {
   title: "Fastphone Deliv",
@@ -15,11 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <HeaderBar />
-        {children}
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

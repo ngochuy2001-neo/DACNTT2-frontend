@@ -1,8 +1,10 @@
 "use client";
-import Banner from "./components/homepage/Banner";
-import HomepageProductList from "./components/homepage/HomepageProductList";
-import LaptopBrands from "./components/homepage/LaptopBrands";
-import MobileBrand from "./components/homepage/MobileBrand";
+
+import Banner from "../components/homepage/Banner";
+import HomepageProductList from "../components/homepage/HomepageProductList";
+import LaptopBrands from "../components/homepage/LaptopBrands";
+import MobileBrand from "../components/homepage/MobileBrand";
+
 
 const topProduct = [
   {
