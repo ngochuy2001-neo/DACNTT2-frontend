@@ -14,23 +14,23 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-function BrandPage() {
-  const [brandData, setBrandData] = useState([
+function CategoryPage() {
+  const [categoryData, setCategoryData] = useState([
     {
       _id: "Something",
-      name: "Test",
+      category_name: "Test",
     },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [brandName, setBrandName] = useState("");
+  const [categoryName, setCategoryName] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState<string>("");
 
   const fetchData = async () => {
     axios
-      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/")
-      .then((response) => setBrandData(response.data));
+      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/")
+      .then((response) => setCategoryData(response.data));
   };
 
   const handleOpenModal = (modalType: boolean) => {
@@ -40,13 +40,13 @@ function BrandPage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setBrandName("");
+    setCategoryName("");
   };
 
-  const createBrand = async () => {
+  const createCategory = async () => {
     axios
-      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/", {
-        name: brandName,
+      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/", {
+        category_name: categoryName,
       })
       .then((response) => {
         fetchData();
@@ -56,10 +56,10 @@ function BrandPage() {
     handleCloseModal();
   };
 
-  const updateBrand = async (id: string) => {
+  const updateCategory = async (id: string) => {
     axios
-      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id, {
-        name: brandName,
+      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/" + id, {
+        category_name: categoryName,
       })
       .then((response) => {
         fetchData();
@@ -69,9 +69,9 @@ function BrandPage() {
     handleCloseModal();
   };
 
-  const deleteBrand = async (id: string) => {
+  const deleteCategory = async (id: string) => {
     axios
-      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id)
+      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/" + id)
       .then((response) => {
         fetchData();
         console.log(response);
@@ -87,13 +87,13 @@ function BrandPage() {
   return (
     <div className="bg-white h-[100%] rounded-md p-[10px]">
       <div className="flex items-center w-full justify-between px-[20px]">
-        <h1 className="font-bold text-[20px]">Quản lý thương hiệu</h1>
+        <h1 className="font-bold text-[20px]">Quản lý danh mục sản phẩm</h1>
         <Button
           onClick={() => handleOpenModal(false)}
           variant="outlined"
           startIcon={<Add />}
         >
-          Thêm thương hiệu
+          Thêm danh mục
         </Button>
       </div>
       <div>
@@ -101,21 +101,21 @@ function BrandPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Tên thương hiệu</TableCell>
+              <TableCell>Tên danh mục</TableCell>
               <TableCell align="right">Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {brandData.map((data, index) => (
+            {categoryData.map((data, index) => (
               <TableRow key={index}>
                 <TableCell>{data._id}</TableCell>
-                <TableCell>{data.name}</TableCell>
+                <TableCell>{data.category_name}</TableCell>
                 <TableCell align="right">
                   <ButtonGroup>
                     <Button
                       onClick={() => {
                         setEditId(data._id);
-                        setBrandName(data.name);
+                        setCategoryName(data.category_name);
                         handleOpenModal(true);
                       }}
                       variant="outlined"
@@ -124,7 +124,7 @@ function BrandPage() {
                     </Button>
                     <Button
                       onClick={() => {
-                        deleteBrand(data._id);
+                        deleteCategory(data._id);
                         fetchData();
                       }}
                       color="error"
@@ -145,24 +145,24 @@ function BrandPage() {
       >
         <div className="min-w-[800px] flex flex-col gap-[20px] bg-white py-[20px] px-[30px]">
           <div className="w-[100%]">
-            <p className="font-bold text-[20px]">Thêm thương hiệu</p>
+            <p className="font-bold text-[20px]">Thêm danh mục</p>
           </div>
           <div className="w-[100%]">
             <TextField
-              defaultValue={isEditMode ? brandName : ""}
+              defaultValue={isEditMode ? categoryName : ""}
               sx={{ width: "100%" }}
               variant="standard"
-              label="Tên thương hiệu"
-              onChange={(e) => setBrandName(e.target.value)}
+              label="Tên danh mục"
+              onChange={(e) => setCategoryName(e.target.value)}
             />
           </div>
           <div className="flex justify-end">
             <Button
               onClick={() => {
                 if (!isEditMode) {
-                  createBrand();
+                  createCategory();
                 } else {
-                  updateBrand(editId);
+                  updateCategory(editId);
                 }
                 fetchData();
               }}
@@ -179,4 +179,4 @@ function BrandPage() {
   );
 }
 
-export default BrandPage;
+export default CategoryPage;

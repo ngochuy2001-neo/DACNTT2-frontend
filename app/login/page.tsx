@@ -1,17 +1,38 @@
+"use client";
 import { TextField, Typography, Button } from "@mui/material";
-import React from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 function LoginPage() {
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const router = useRouter();
+
+  const handleLogin = () => {
+    const loginInformation = { phone_number: phoneNumber, password: password };
+    axios
+      .post(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "user/login/",
+        loginInformation
+      )
+      .then((response) => {
+        localStorage.setItem("token", response.data.token);
+        router.push("/");
+      })
+      .catch((error) => console.log(error));
+  };
   return (
-    <div className="bg-login-background bg-center bg-cover h-[calc(100vh-364px)] flex justify-center items-center">
+    <div className="bg-login-background bg-center bg-cover h-[100vh] flex justify-center items-center">
       <div className="bg-white h-fit flex flex-col items-center justify-center gap-[10px] p-[30px] w-[30%]">
         <Typography sx={{ fontWeight: "bold" }}>ĐĂNG NHẬP</Typography>
         <form className="flex flex-col items-center gap-[20px] w-full">
           <TextField
             id="username-field"
-            label="Tên đăng nhập"
+            label="Số điện thoại"
             variant="standard"
             className="w-full"
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
           <TextField
             id="password-field"
@@ -19,8 +40,13 @@ function LoginPage() {
             variant="standard"
             type="password"
             className="w-full"
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <Button variant="contained" sx={{ width: "40%" }}>
+          <Button
+            onClick={handleLogin}
+            variant="contained"
+            sx={{ width: "40%" }}
+          >
             Đăng nhập
           </Button>
           <Button

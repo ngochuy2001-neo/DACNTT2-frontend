@@ -11,7 +11,7 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import { Style } from "@mui/icons-material";
+import { PointOfSale, Style, Tag } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
 const submenuData = [
@@ -19,6 +19,16 @@ const submenuData = [
     menuIcon: <Style />,
     name: "Quản lý thương hiệu",
     url: "/admin/brand",
+  },
+  {
+    menuIcon: <Tag />,
+    name: "Quản lý phân loại",
+    url: "/admin/category",
+  },
+  {
+    menuIcon: <PointOfSale />,
+    name: "Quản lý phương thức thanh toán",
+    url: "/admin/paymentmethod",
   },
 ];
 

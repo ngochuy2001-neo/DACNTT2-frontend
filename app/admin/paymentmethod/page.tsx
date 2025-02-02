@@ -14,39 +14,36 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-function BrandPage() {
-  const [brandData, setBrandData] = useState([
+function PaymentMethod() {
+  const [paymentmethodData, setPaymentmethodData] = useState([
     {
       _id: "Something",
-      name: "Test",
+      payment_method_name: "Test",
     },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [brandName, setBrandName] = useState("");
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editId, setEditId] = useState<string>("");
+  const [paymentmethodName, setPaymentmethodName] = useState("");
 
   const fetchData = async () => {
     axios
-      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/")
-      .then((response) => setBrandData(response.data));
+      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/")
+      .then((response) => setPaymentmethodData(response.data));
   };
 
-  const handleOpenModal = (modalType: boolean) => {
-    setIsEditMode(modalType);
+  const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setBrandName("");
+    setPaymentmethodName("");
   };
 
-  const createBrand = async () => {
+  const createPaymentmethod = async () => {
     axios
-      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/", {
-        name: brandName,
+      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/", {
+        payment_method_name: paymentmethodName,
       })
       .then((response) => {
         fetchData();
@@ -56,22 +53,9 @@ function BrandPage() {
     handleCloseModal();
   };
 
-  const updateBrand = async (id: string) => {
+  const deletePaymentmethod = async (id: string) => {
     axios
-      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id, {
-        name: brandName,
-      })
-      .then((response) => {
-        fetchData();
-        console.log(response);
-      })
-      .catch((error) => console.log(error));
-    handleCloseModal();
-  };
-
-  const deleteBrand = async (id: string) => {
-    axios
-      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id)
+      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/" + id)
       .then((response) => {
         fetchData();
         console.log(response);
@@ -87,13 +71,15 @@ function BrandPage() {
   return (
     <div className="bg-white h-[100%] rounded-md p-[10px]">
       <div className="flex items-center w-full justify-between px-[20px]">
-        <h1 className="font-bold text-[20px]">Quản lý thương hiệu</h1>
+        <h1 className="font-bold text-[20px]">
+          Quản lý phương thức thanh toán
+        </h1>
         <Button
-          onClick={() => handleOpenModal(false)}
+          onClick={() => handleOpenModal()}
           variant="outlined"
           startIcon={<Add />}
         >
-          Thêm thương hiệu
+          Thêm phương thức thanh toán
         </Button>
       </div>
       <div>
@@ -101,30 +87,20 @@ function BrandPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Tên thương hiệu</TableCell>
+              <TableCell>Tên phương thức</TableCell>
               <TableCell align="right">Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {brandData.map((data, index) => (
+            {paymentmethodData.map((data, index) => (
               <TableRow key={index}>
                 <TableCell>{data._id}</TableCell>
-                <TableCell>{data.name}</TableCell>
+                <TableCell>{data.payment_method_name}</TableCell>
                 <TableCell align="right">
                   <ButtonGroup>
                     <Button
                       onClick={() => {
-                        setEditId(data._id);
-                        setBrandName(data.name);
-                        handleOpenModal(true);
-                      }}
-                      variant="outlined"
-                    >
-                      Sửa
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        deleteBrand(data._id);
+                        deletePaymentmethod(data._id);
                         fetchData();
                       }}
                       color="error"
@@ -145,25 +121,20 @@ function BrandPage() {
       >
         <div className="min-w-[800px] flex flex-col gap-[20px] bg-white py-[20px] px-[30px]">
           <div className="w-[100%]">
-            <p className="font-bold text-[20px]">Thêm thương hiệu</p>
+            <p className="font-bold text-[20px]">Thêm phương thức thanh toán</p>
           </div>
           <div className="w-[100%]">
             <TextField
-              defaultValue={isEditMode ? brandName : ""}
               sx={{ width: "100%" }}
               variant="standard"
-              label="Tên thương hiệu"
-              onChange={(e) => setBrandName(e.target.value)}
+              label="Tên phương thức"
+              onChange={(e) => setPaymentmethodName(e.target.value)}
             />
           </div>
           <div className="flex justify-end">
             <Button
               onClick={() => {
-                if (!isEditMode) {
-                  createBrand();
-                } else {
-                  updateBrand(editId);
-                }
+                createPaymentmethod();
                 fetchData();
               }}
             >
@@ -179,4 +150,4 @@ function BrandPage() {
   );
 }
 
-export default BrandPage;
+export default PaymentMethod;
