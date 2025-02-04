@@ -21,16 +21,21 @@ function BrandPage() {
       name: "Test",
     },
   ]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [brandName, setBrandName] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState<string>("");
 
+  // Fetch data from API
   const fetchData = async () => {
-    axios
-      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/")
-      .then((response) => setBrandData(response.data));
+    try {
+      const response = await axios.get(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/"
+      );
+      setBrandData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   const handleOpenModal = (modalType: boolean) => {
@@ -43,47 +48,60 @@ function BrandPage() {
     setBrandName("");
   };
 
+  // Create brand
   const createBrand = async () => {
-    axios
-      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/", {
-        name: brandName,
-      })
-      .then((response) => {
-        fetchData();
-        console.log(response);
-      })
-      .catch((error) => console.log(error));
+    if (!brandName.trim()) return alert("Vui lòng nhập tên thương hiệu!");
+
+    try {
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/",
+        {
+          name: brandName,
+        }
+      );
+      setBrandData((prev) => [...prev, response.data]); // Update local state directly
+    } catch (error) {
+      console.log("Error creating brand:", error);
+    }
     handleCloseModal();
   };
 
+  // Update brand
   const updateBrand = async (id: string) => {
-    axios
-      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id, {
-        name: brandName,
-      })
-      .then((response) => {
-        fetchData();
-        console.log(response);
-      })
-      .catch((error) => console.log(error));
+    if (!brandName.trim()) return alert("Vui lòng nhập tên thương hiệu!");
+
+    try {
+      const response = await axios.put(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id,
+        {
+          name: brandName,
+        }
+      );
+      setBrandData((prev) =>
+        prev.map((brand) =>
+          brand._id === id ? { ...brand, name: response.data.name } : brand
+        )
+      );
+    } catch (error) {
+      console.log("Error updating brand:", error);
+    }
     handleCloseModal();
   };
 
+  // Delete brand
   const deleteBrand = async (id: string) => {
-    axios
-      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id)
-      .then((response) => {
-        fetchData();
-        console.log(response);
-      })
-      .catch((error) => console.log(error));
-    fetchData();
-    handleCloseModal();
+    try {
+      await axios.delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id);
+      setBrandData((prev) => prev.filter((brand) => brand._id !== id)); // Update local state directly
+    } catch (error) {
+      console.log("Error deleting brand:", error);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
   return (
     <div className="bg-white h-[100%] rounded-md p-[10px]">
       <div className="flex items-center w-full justify-between px-[20px]">
@@ -125,7 +143,6 @@ function BrandPage() {
                     <Button
                       onClick={() => {
                         deleteBrand(data._id);
-                        fetchData();
                       }}
                       color="error"
                     >
@@ -145,11 +162,13 @@ function BrandPage() {
       >
         <div className="min-w-[800px] flex flex-col gap-[20px] bg-white py-[20px] px-[30px]">
           <div className="w-[100%]">
-            <p className="font-bold text-[20px]">Thêm thương hiệu</p>
+            <p className="font-bold text-[20px]">
+              {isEditMode ? "Sửa thương hiệu" : "Thêm thương hiệu"}
+            </p>
           </div>
           <div className="w-[100%]">
             <TextField
-              defaultValue={isEditMode ? brandName : ""}
+              value={brandName}
               sx={{ width: "100%" }}
               variant="standard"
               label="Tên thương hiệu"
@@ -159,12 +178,11 @@ function BrandPage() {
           <div className="flex justify-end">
             <Button
               onClick={() => {
-                if (!isEditMode) {
-                  createBrand();
-                } else {
+                if (isEditMode) {
                   updateBrand(editId);
+                } else {
+                  createBrand();
                 }
-                fetchData();
               }}
             >
               Xác nhận
