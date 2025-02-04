@@ -15,7 +15,7 @@ function RegisterPage() {
   const handleRegister = () => {
     if (password === confirmPassword) {
       axios
-        .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "user/register/", {
+        .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/register/", {
           email: email,
           phone_number: phoneNumber,
           user_name: name,

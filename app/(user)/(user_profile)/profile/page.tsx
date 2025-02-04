@@ -17,7 +17,7 @@ function ProfilePage() {
     const token = localStorage.getItem("token");
     axios
       .post(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "user/auth",
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/authorize",
         {},
         {
           headers: {
@@ -40,7 +40,7 @@ function ProfilePage() {
     const token = localStorage.getItem("token");
     axios
       .patch(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "user/auth",
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/authorize",
         {
           user_name: name,
           email: email,

@@ -29,7 +29,7 @@ function CategoryPage() {
 
   const fetchData = async () => {
     axios
-      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/")
+      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/category/")
       .then((response) => setCategoryData(response.data));
   };
 
@@ -45,7 +45,7 @@ function CategoryPage() {
 
   const createCategory = async () => {
     axios
-      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/", {
+      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/category/", {
         category_name: categoryName,
       })
       .then((response) => {
@@ -58,7 +58,7 @@ function CategoryPage() {
 
   const updateCategory = async (id: string) => {
     axios
-      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/" + id, {
+      .put(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/category/" + id, {
         category_name: categoryName,
       })
       .then((response) => {
@@ -71,7 +71,7 @@ function CategoryPage() {
 
   const deleteCategory = async (id: string) => {
     axios
-      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "category/" + id)
+      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/category/" + id)
       .then((response) => {
         fetchData();
         console.log(response);

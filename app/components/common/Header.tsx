@@ -21,6 +21,7 @@ function HeaderBar({
   const handleLogout = () => {
     setUserName("");
     localStorage.removeItem("token");
+    router.push("/login");
   };
   return (
     <div className="border-b-[2px] h-[100px] border-black px-[75px] flex items-center justify-around">
@@ -66,7 +67,12 @@ function HeaderBar({
                   anchorEl={anchorEl}
                   onClose={() => setAnchorEl(null)}
                 >
-                  <MenuItem onClick={() => setAnchorEl(null)}>
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                      router.push("/profile");
+                    }}
+                  >
                     Thông tin người dùng
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>

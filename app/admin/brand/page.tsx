@@ -30,7 +30,7 @@ function BrandPage() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/"
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/brand/"
       );
       setBrandData(response.data);
     } catch (error) {
@@ -54,7 +54,7 @@ function BrandPage() {
 
     try {
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/",
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/brand/",
         {
           name: brandName,
         }
@@ -72,7 +72,7 @@ function BrandPage() {
 
     try {
       const response = await axios.put(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id,
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/brand/" + id,
         {
           name: brandName,
         }
@@ -91,7 +91,9 @@ function BrandPage() {
   // Delete brand
   const deleteBrand = async (id: string) => {
     try {
-      await axios.delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "brand/" + id);
+      await axios.delete(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/brand/" + id
+      );
       setBrandData((prev) => prev.filter((brand) => brand._id !== id)); // Update local state directly
     } catch (error) {
       console.log("Error deleting brand:", error);

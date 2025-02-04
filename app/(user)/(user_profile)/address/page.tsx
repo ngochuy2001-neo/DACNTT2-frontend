@@ -10,6 +10,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -32,22 +34,30 @@ function AddressPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Partial<Address>>({});
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
-  const fetchAddressData = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Không tìm thấy token");
-      return;
+  const fetchAddressData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSnackbarMessage("Không tìm thấy token");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAddresses(response.data.addresses);
+    } catch (error) {
+      console.error("Lỗi khi lấy địa chỉ:", error);
+      setSnackbarMessage("Lỗi khi lấy địa chỉ");
+      setSnackbarOpen(true);
     }
-
-    axios
-      .get(`${process.env.NEXT_PUBLIC_LOCAL_API_URL}address`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setAddresses(response.data.addresses);
-      })
-      .catch((error) => console.error("Lỗi khi lấy địa chỉ:", error));
   };
 
   useEffect(() => {
@@ -55,15 +65,16 @@ function AddressPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Không tìm thấy token");
-      return;
-    }
-
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSnackbarMessage("Không tìm thấy token");
+        setSnackbarOpen(true);
+        return;
+      }
+
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}address/${id}`,
+        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -72,8 +83,12 @@ function AddressPage() {
       setAddresses((prevAddresses) =>
         prevAddresses.filter((address) => address._id !== id)
       );
+      setSnackbarMessage("Xóa địa chỉ thành công");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Lỗi khi xóa địa chỉ:", error);
+      setSnackbarMessage("Lỗi khi xóa địa chỉ");
+      setSnackbarOpen(true);
     }
   };
 
@@ -95,16 +110,17 @@ function AddressPage() {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Không tìm thấy token");
-      return;
-    }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSnackbarMessage("Không tìm thấy token");
+        setSnackbarOpen(true);
+        return;
+      }
 
-    if (isEditing && selectedAddress._id) {
-      try {
+      if (isEditing && selectedAddress._id) {
         const response = await axios.put(
-          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}address/${selectedAddress._id}`,
+          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address/${selectedAddress._id}`,
           selectedAddress,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -115,23 +131,25 @@ function AddressPage() {
               : address
           )
         );
-      } catch (error) {
-        console.error("Lỗi khi cập nhật địa chỉ:", error);
-      }
-    } else {
-      try {
+        setSnackbarMessage("Cập nhật địa chỉ thành công");
+        setSnackbarOpen(true);
+      } else {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}address`,
+          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address`,
           selectedAddress,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAddresses([...addresses, response.data.address]);
-      } catch (error) {
-        console.error("Lỗi khi thêm địa chỉ:", error);
+        setSnackbarMessage("Thêm địa chỉ thành công");
+        setSnackbarOpen(true);
       }
-    }
 
-    setIsModalOpen(false);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Lỗi khi lưu địa chỉ:", error);
+      setSnackbarMessage("Lỗi khi lưu địa chỉ");
+      setSnackbarOpen(true);
+    }
   };
 
   return (
@@ -249,6 +267,21 @@ function AddressPage() {
           </Button>
         </div>
       </Modal>
+
+      {/* Snackbar thông báo lỗi hoặc thành công */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

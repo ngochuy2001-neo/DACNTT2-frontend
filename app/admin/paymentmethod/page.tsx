@@ -27,7 +27,7 @@ function PaymentMethod() {
 
   const fetchData = async () => {
     axios
-      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/")
+      .get(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/paymentmethod/")
       .then((response) => setPaymentmethodData(response.data));
   };
 
@@ -42,7 +42,7 @@ function PaymentMethod() {
 
   const createPaymentmethod = async () => {
     axios
-      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/", {
+      .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/paymentmethod/", {
         payment_method_name: paymentmethodName,
       })
       .then((response) => {
@@ -55,7 +55,9 @@ function PaymentMethod() {
 
   const deletePaymentmethod = async (id: string) => {
     axios
-      .delete(process.env.NEXT_PUBLIC_LOCAL_API_URL + "paymentmethod/" + id)
+      .delete(
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/paymentmethod/" + id
+      )
       .then((response) => {
         fetchData();
         console.log(response);

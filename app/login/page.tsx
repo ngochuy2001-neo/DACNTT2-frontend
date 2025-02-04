@@ -13,7 +13,7 @@ function LoginPage() {
     const loginInformation = { phone_number: phoneNumber, password: password };
     axios
       .post(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "user/login/",
+        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/login/",
         loginInformation
       )
       .then((response) => {
