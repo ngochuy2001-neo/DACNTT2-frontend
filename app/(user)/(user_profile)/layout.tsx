@@ -2,7 +2,7 @@
 import { List, ListItem } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { getTokenAndAuth } from "../../utils/authentication"; // Import hàm xác thực
+import { getTokenAndAuth } from "../../utils/authentication"; 
 
 const menuList = [
   { title: "Thông tin khách hàng", url: "/profile" },
@@ -33,7 +33,7 @@ function ProfilePage({
   }, [router]);
 
   if (!isAuthenticated) {
-    return <div>Loading...</div>; // Hiển thị loading khi đang kiểm tra xác thực
+    return <div>Loading...</div>; 
   }
 
   return (

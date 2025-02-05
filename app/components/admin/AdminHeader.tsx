@@ -15,7 +15,7 @@ function AdminHeader({
   setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
-    <div className="bg-red-700 flex justify-between h-[78px] text-white px-[30px] items-center">
+    <div className="bg-red-700 fixed w-full flex justify-between h-[78px] text-white px-[30px] items-center">
       <Button
         sx={{
           color: "white",

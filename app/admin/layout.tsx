@@ -11,7 +11,13 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import { PointOfSale, Style, Tag } from "@mui/icons-material";
+import {
+  Laptop,
+  PointOfSale,
+  Smartphone,
+  Style,
+  Tag,
+} from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
 const submenuData = [
@@ -30,6 +36,16 @@ const submenuData = [
     name: "Quản lý phương thức thanh toán",
     url: "/admin/paymentmethod",
   },
+  {
+    menuIcon: <Laptop />,
+    name: "Quản lý thiết bị laptop",
+    url: "/admin/laptop",
+  },
+  {
+    menuIcon: <Smartphone />,
+    name: "Quản lý thiết bị di động",
+    url: "/admin/laptop",
+  },
 ];
 
 function AdminLayout({
@@ -45,7 +61,7 @@ function AdminLayout({
   return (
     <div>
       <AdminHeader isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-      <div>
+      <div className="pt-[78px]">
         <Drawer
           open={isMenuOpen}
           sx={{
