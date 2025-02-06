@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import axios from "axios";
 import {
   Accordion,
   AccordionDetails,
@@ -18,6 +20,7 @@ import {
   Chip,
   Grid,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import {
   KeyboardArrowDown,
@@ -26,169 +29,31 @@ import {
 } from "@mui/icons-material";
 
 interface Product {
-  id: string;
-  image: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviews: number;
-  brand: string;
-  cpu: {
-    brand: string;
-    series: string;
+  _id: string;
+  product_name: string;
+  brand: {
+    _id: string;
+    name: string;
   };
-  ram: {
-    size: number;
-    type: string;
+  category: {
+    _id: string;
+    name: string;
   };
-  storage: {
-    type: string;
-    capacity: number;
-  };
-  screen: {
-    size: number;
-    type: string;
-  };
+  description: string;
+  images: Array<{
+    url: string;
+    public_id: string;
+  }>;
+  variants: Array<{
+    _id: string;
+    variant_name: string;
+    price: number;
+    images: Array<{
+      url: string;
+      public_id: string;
+    }>;
+  }>;
 }
-
-const productData: Product[] = [
-  {
-    id: "1",
-    image:
-      "https://product.hstatic.net/200000722513/product/s5406ma-pp046ws_opi_1__c32544a0a1924215842dca8aaf3df95a_1024x1024.jpg",
-    name: "Laptop ASUS Vivobook Go 14 E1404FA-NK177W",
-    price: 23990000,
-    originalPrice: 27990000,
-    rating: 4.5,
-    reviews: 123,
-    brand: "ASUS",
-    cpu: {
-      brand: "Intel",
-      series: "Core i5",
-    },
-    ram: {
-      size: 16,
-      type: "DDR5",
-    },
-    storage: {
-      type: "SSD",
-      capacity: 512,
-    },
-    screen: {
-      size: 14,
-      type: "OLED",
-    },
-  },
-  {
-    id: "2",
-    image:
-      "https://product.hstatic.net/200000722513/product/s5406ma-pp046ws_opi_1__c32544a0a1924215842dca8aaf3df95a_1024x1024.jpg",
-    name: "Laptop ASUS Vivobook Go 14 E1404FA-NK177W",
-    price: 23990000,
-    originalPrice: 27990000,
-    rating: 4.5,
-    reviews: 123,
-    brand: "ASUS",
-    cpu: {
-      brand: "Intel",
-      series: "Core i5",
-    },
-    ram: {
-      size: 16,
-      type: "DDR5",
-    },
-    storage: {
-      type: "SSD",
-      capacity: 512,
-    },
-    screen: {
-      size: 14,
-      type: "OLED",
-    },
-  },
-  {
-    id: "3",
-    image:
-      "https://product.hstatic.net/200000722513/product/s5406ma-pp046ws_opi_1__c32544a0a1924215842dca8aaf3df95a_1024x1024.jpg",
-    name: "Laptop ASUS Vivobook Go 14 E1404FA-NK177W",
-    price: 23990000,
-    originalPrice: 27990000,
-    rating: 4.5,
-    reviews: 123,
-    brand: "ASUS",
-    cpu: {
-      brand: "Intel",
-      series: "Core i5",
-    },
-    ram: {
-      size: 16,
-      type: "DDR5",
-    },
-    storage: {
-      type: "SSD",
-      capacity: 512,
-    },
-    screen: {
-      size: 14,
-      type: "OLED",
-    },
-  },
-  {
-    id: "4",
-    image:
-      "https://product.hstatic.net/200000722513/product/s5406ma-pp046ws_opi_1__c32544a0a1924215842dca8aaf3df95a_1024x1024.jpg",
-    name: "Laptop ASUS Vivobook Go 14 E1404FA-NK177W",
-    price: 23990000,
-    originalPrice: 27990000,
-    rating: 4.5,
-    reviews: 123,
-    brand: "ASUS",
-    cpu: {
-      brand: "Intel",
-      series: "Core i5",
-    },
-    ram: {
-      size: 16,
-      type: "DDR5",
-    },
-    storage: {
-      type: "SSD",
-      capacity: 512,
-    },
-    screen: {
-      size: 14,
-      type: "OLED",
-    },
-  },
-  {
-    id: "5",
-    image:
-      "https://product.hstatic.net/200000722513/product/s5406ma-pp046ws_opi_1__c32544a0a1924215842dca8aaf3df95a_1024x1024.jpg",
-    name: "Laptop ASUS Vivobook Go 14 E1404FA-NK177W",
-    price: 23990000,
-    originalPrice: 27990000,
-    rating: 4.5,
-    reviews: 123,
-    brand: "ASUS",
-    cpu: {
-      brand: "Intel",
-      series: "Core i5",
-    },
-    ram: {
-      size: 16,
-      type: "DDR5",
-    },
-    storage: {
-      type: "SSD",
-      capacity: 512,
-    },
-    screen: {
-      size: 14,
-      type: "OLED",
-    },
-  },
-];
 
 const filters = [
   {
@@ -236,10 +101,31 @@ const filters = [
 ];
 
 function ProductPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [priceRange, setPriceRange] = useState<number[]>([0, 100000000]);
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
   >({});
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:4200/api/laptop");
+      if (response.data) {
+        setProducts(response.data);
+      }
+    } catch (error: any) {
+      console.error("Error fetching products:", error);
+      // Hiển thị thông báo lỗi cho người dùng
+      alert(error.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePriceChange = (_: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
@@ -255,6 +141,20 @@ function ProductPage() {
         : [value],
     }));
   };
+
+  const getImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) return "/images/placeholder.jpg";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    return `http://localhost:4200${imageUrl}`;
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box className="max-w-7xl mx-auto py-8 px-4">
@@ -339,8 +239,8 @@ function ProductPage() {
         {/* Danh sách sản phẩm */}
         <Grid item xs={12} md={9}>
           <Grid container spacing={2}>
-            {productData.map((product) => (
-              <Grid item xs={12} sm={6} md={4} key={product.id}>
+            {products.map((product) => (
+              <Grid item xs={12} sm={6} md={4} key={product._id}>
                 <Paper
                   elevation={0}
                   sx={{
@@ -357,16 +257,14 @@ function ProductPage() {
                     <Box
                       sx={{
                         position: "relative",
-                        paddingTop: "100%",
                         borderRadius: 1,
                         overflow: "hidden",
                       }}
                     >
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        style={{ objectFit: "cover" }}
+                      <img
+                        src={getImageUrl(product.images[0]?.url)}
+                        alt={product.product_name}
+                        style={{ objectFit: "cover", height: "200px" }}
                       />
                     </Box>
                     <IconButton
@@ -380,22 +278,6 @@ function ProductPage() {
                     >
                       <FavoriteBorder />
                     </IconButton>
-                    {product.originalPrice && (
-                      <Chip
-                        label={`-${Math.round(
-                          ((product.originalPrice - product.price) /
-                            product.originalPrice) *
-                            100
-                        )}%`}
-                        color="error"
-                        size="small"
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          left: 8,
-                        }}
-                      />
-                    )}
                   </Box>
 
                   <Box sx={{ mt: 2 }}>
@@ -410,38 +292,12 @@ function ProductPage() {
                         WebkitBoxOrient: "vertical",
                       }}
                     >
-                      {product.name}
+                      {product.product_name}
                     </Typography>
-
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems="center"
-                      sx={{ mt: 1 }}
-                    >
-                      <Rating
-                        value={product.rating}
-                        precision={0.5}
-                        size="small"
-                        readOnly
-                      />
-                      <Typography variant="body2" color="text.secondary">
-                        ({product.reviews})
-                      </Typography>
-                    </Stack>
 
                     <Typography variant="h6" color="error" sx={{ mt: 1 }}>
-                      {product.price.toLocaleString()}₫
+                      {product.variants[0]?.price.toLocaleString()}₫
                     </Typography>
-                    {product.originalPrice && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ textDecoration: "line-through" }}
-                      >
-                        {product.originalPrice.toLocaleString()}₫
-                      </Typography>
-                    )}
 
                     <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
                       <Button
