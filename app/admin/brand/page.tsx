@@ -16,7 +16,8 @@ import React, { useEffect, useState } from "react";
 
 interface Brand {
   _id: string;
-  name: string;
+  brand_name: string;
+  brand_id: string;
 }
 
 function BrandPage() {
@@ -29,10 +30,9 @@ function BrandPage() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/brand`
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/brands`
       );
-      setBrandData(response.data);
-      console.log(response.data);
+      setBrandData(response.data.brands);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
     }
@@ -52,13 +52,13 @@ function BrandPage() {
     if (!brandName.trim()) return alert("Vui lòng nhập tên thương hiệu!");
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/brand/create`,
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/brands/create`,
         {
-          brand_name: brandName,
+          brandName: brandName,
         }
       );
-      setBrandData((prev) => [...prev, response.data]);
+      fetchData(); // Fetch lại dữ liệu sau khi tạo thương hiệu
     } catch (error) {
       console.log("Lỗi khi tạo thương hiệu:", error);
     }
@@ -69,19 +69,13 @@ function BrandPage() {
     if (!brandName.trim()) return alert("Vui lòng nhập tên thương hiệu!");
 
     try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/brand/${id}`,
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/brands/update/${id}`,
         {
-          brand_name: brandName,
+          brandName: brandName,
         }
       );
-      setBrandData((prev) =>
-        prev.map((brand) =>
-          brand._id === id
-            ? { ...brand, brand_name: response.data.brand_name }
-            : brand
-        )
-      );
+      fetchData(); // Fetch lại dữ liệu sau khi cập nhật thương hiệu
     } catch (error) {
       console.log("Lỗi khi cập nhật thương hiệu:", error);
     }
@@ -91,9 +85,9 @@ function BrandPage() {
   const deleteBrand = async (id: string) => {
     try {
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/brand/${id}`
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/brands/delete/${id}`
       );
-      setBrandData((prev) => prev.filter((brand) => brand._id !== id));
+      fetchData();
     } catch (error) {
       console.log("Lỗi khi xóa thương hiệu:", error);
     }
@@ -104,7 +98,7 @@ function BrandPage() {
   }, []);
 
   return (
-    <div className="bg-white h-[100%] rounded-md p-[10px]">
+    <div className="bg-white h-[100%] rounded-md p-[10px] overflow-y-scroll">
       <div className="flex items-center w-full justify-between px-[20px]">
         <h1 className="font-bold text-[20px]">Quản lý thương hiệu</h1>
         <Button
@@ -128,13 +122,13 @@ function BrandPage() {
             {brandData.map((data, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{data.name}</TableCell>
+                <TableCell>{data.brand_name}</TableCell>
                 <TableCell align="right">
                   <ButtonGroup>
                     <Button
                       onClick={() => {
-                        setEditId(data._id);
-                        setBrandName(data.name);
+                        setEditId(data.brand_id);
+                        setBrandName(data.brand_name);
                         handleOpenModal(true);
                       }}
                       variant="outlined"
@@ -143,7 +137,7 @@ function BrandPage() {
                     </Button>
                     <Button
                       onClick={() => {
-                        deleteBrand(data._id);
+                        deleteBrand(data.brand_id);
                       }}
                       color="error"
                     >
@@ -161,7 +155,7 @@ function BrandPage() {
         open={isModalOpen}
         onClose={handleCloseModal}
       >
-        <div className="min-w-[800px] flex flex-col gap-[20px] bg-white py-[20px] px-[30px]">
+        <div className="min-w-[800px] flex flex-col gap-[20px] bg-white py-[20px] px-[30px] ">
           <div className="w-[100%]">
             <p className="font-bold text-[20px]">
               {isEditMode ? "Sửa thương hiệu" : "Thêm thương hiệu"}

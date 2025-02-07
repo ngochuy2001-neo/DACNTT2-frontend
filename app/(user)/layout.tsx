@@ -11,26 +11,38 @@ function UserLayout({
 }>) {
   const [username, setUserName] = useState<string>("");
 
-  const authorize = () => {
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/authorize",
-        {},
+  const authorize = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/users/login/check`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
-        setUserName(response.data.user.name);
-      })
-      .catch((error) => console.log(error));
+      );
+
+      if (response.data.success) {
+        const userData = response.data.user;
+        setUserName(userData.username);
+      } else {
+        localStorage.removeItem("token");
+        setUserName("");
+      }
+    } catch (error) {
+      console.error("Authorization error:", error);
+      localStorage.removeItem("token");
+      setUserName("");
+    }
   };
 
   useEffect(() => {
     authorize();
   }, []);
+
   return (
     <div>
       <HeaderBar username={username} setUserName={setUserName} />

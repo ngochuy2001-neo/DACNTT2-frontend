@@ -6,57 +6,73 @@ import React, { useEffect, useState } from "react";
 function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [userData, setUserData] = useState({
-    name: "Nguyễn Lê Ngọc Huy",
-    email: "bleach20011001@gmail.com",
-    phone_number: "0399803827",
+    username: "",
+    fullname: "",
+    email: "",
+    phoneNumber: "",
   });
   const [email, setEmail] = useState(userData.email);
-  const [name, setName] = useState(userData.name);
+  const [fullname, setFullname] = useState(userData.fullname);
+  const [password, setPassword] = useState("");
 
-  const fetchUserData = () => {
+  const fetchUserData = async () => {
     const token = localStorage.getItem("token");
-    axios
-      .post(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/authorize",
-        {},
+    if (!token) return;
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/users/fetch`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
-        console.log(response);
+      );
+
+      if (response.data.success) {
         setUserData({
-          name: response.data.user.name,
+          username: response.data.user.user_name,
+          fullname: response.data.user.full_name,
           email: response.data.user.email,
-          phone_number: response.data.user.phone_number,
+          phoneNumber: response.data.user.phone_num,
         });
-      })
-      .catch((error) => console.log(error));
+        setEmail(response.data.user.email);
+        setFullname(response.data.user.full_name);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   };
 
-  const handleChangeUserProfile = () => {
+  const handleChangeUserProfile = async () => {
     const token = localStorage.getItem("token");
-    axios
-      .patch(
-        process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/authorize",
+    if (!token) return;
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/users/update`,
         {
-          user_name: name,
           email: email,
+          full_name: fullname,
+          phoneNumber: userData.phoneNumber,
+          password: password,
+          role_id: "10",
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((response) => {
+      );
+
+      if (response.data.success) {
         localStorage.setItem("token", response.data.token);
-      })
-      .catch((error) => console.log(error));
+        fetchUserData();
+      }
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+    }
     setEditMode(false);
-    fetchUserData();
   };
 
   useEffect(() => {
@@ -66,49 +82,73 @@ function ProfilePage() {
   return (
     <div className="w-full">
       <div>
-        <p className="font-bold text-[20px] mb-[10px]">Thông tin cá nhân</p>
+        <p className="font-bold text-[20px] mb-[10px]">Thông tin cá nhân</p>
       </div>
       <div className="flex flex-col justify-center items-center px-[20px] py-[50px] bg-white w-full shadow-md rounded-lg">
         {!editMode ? (
           <div className="w-full flex justify-center flex-col items-center">
             <div className="flex justify-between w-[40%] border-b-2 py-[10px]">
-              <Typography>Họ và tên</Typography>
-              <Typography>{userData.name}</Typography>
+              <Typography>Họ và tên</Typography>
+              <Typography>{userData.fullname}</Typography>
+            </div>
+            <div className="flex justify-between w-[40%] border-b-2 py-[10px]">
+              <Typography>Tên đăng nhập</Typography>
+              <Typography>{userData.username}</Typography>
             </div>
             <div className="flex justify-between w-[40%] border-b-2 py-[10px]">
               <Typography>Email</Typography>
               <Typography>{userData.email}</Typography>
             </div>
             <div className="flex justify-between w-[40%] py-[10px]">
-              <Typography>Số điện thoại</Typography>
-              <Typography>{userData.phone_number}</Typography>
+              <Typography>Số điện thoại</Typography>
+              <Typography>{userData.phoneNumber}</Typography>
             </div>
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center px-[20px] py-[20px] bg-white w-full gap-[20px]">
             <TextField
               sx={{ width: "40%" }}
-              label="Họ và tên"
+              label="Họ và tên"
+              disabled
               variant="standard"
               size="small"
-              defaultValue={userData.name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+            />
+            <TextField
+              sx={{ width: "40%" }}
+              label="Tên đăng nhập"
+              variant="standard"
+              size="small"
+              value={userData.username}
+              disabled
             />
             <TextField
               sx={{ width: "40%" }}
               label="Email"
               variant="standard"
               size="small"
-              defaultValue={userData.email}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               sx={{ width: "40%" }}
-              disabled
-              label="Số điện thoại"
+              label="Số điện thoại"
               variant="standard"
               size="small"
-              defaultValue={userData.phone_number}
+              value={userData.phoneNumber}
+              onChange={(e) =>
+                setUserData({ ...userData, phoneNumber: e.target.value })
+              }
+            />
+            <TextField
+              sx={{ width: "40%" }}
+              label="Mật khẩu"
+              variant="standard"
+              size="small"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
         )}
@@ -119,7 +159,7 @@ function ProfilePage() {
             size="small"
             variant="contained"
           >
-            Xác nhận
+            Xác nhận
           </Button>
         ) : (
           <Button
@@ -128,7 +168,7 @@ function ProfilePage() {
             size="small"
             variant="contained"
           >
-            Chỉnh sửa thông tin cá nhân
+            Chỉnh sửa thông tin cá nhân
           </Button>
         )}
       </div>

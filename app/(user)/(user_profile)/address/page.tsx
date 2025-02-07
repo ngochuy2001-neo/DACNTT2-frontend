@@ -21,11 +21,11 @@ type Address = {
   user_id: string;
   city: string;
   district: string;
-  ward: string;
   avenue: string;
-  specific_address: string;
+  specific: string;
   create_at: string;
   update_at: string;
+  address_id: string;
   __v: number;
 };
 
@@ -37,22 +37,25 @@ function AddressPage() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
-  const fetchAddressData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setSnackbarMessage("Không tìm thấy token");
-        setSnackbarOpen(true);
-        return;
-      }
+  const fetchAddresses = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSnackbarMessage("Không tìm thấy token");
+      setSnackbarOpen(true);
+      return;
+    }
 
+    try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address`,
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setAddresses(response.data.addresses);
+
+      if (response.data.success) {
+        setAddresses(response.data.address || []);
+      }
     } catch (error) {
       console.error("Lỗi khi lấy địa chỉ:", error);
       setSnackbarMessage("Lỗi khi lấy địa chỉ");
@@ -61,7 +64,7 @@ function AddressPage() {
   };
 
   useEffect(() => {
-    fetchAddressData();
+    fetchAddresses();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -74,14 +77,14 @@ function AddressPage() {
       }
 
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address/${id}`,
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses/delete/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       setAddresses((prevAddresses) =>
-        prevAddresses.filter((address) => address._id !== id)
+        prevAddresses.filter((address) => address.address_id !== id)
       );
       setSnackbarMessage("Xóa địa chỉ thành công");
       setSnackbarOpen(true);
@@ -100,9 +103,8 @@ function AddressPage() {
       setSelectedAddress({
         city: "",
         district: "",
-        ward: "",
         avenue: "",
-        specific_address: "",
+        specific: "",
       });
       setIsEditing(false);
     }
@@ -118,15 +120,21 @@ function AddressPage() {
         return;
       }
 
-      if (isEditing && selectedAddress._id) {
+      if (!selectedAddress.avenue) {
+        setSnackbarMessage("Đường là trường bắt buộc");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      if (isEditing && selectedAddress.address_id) {
         const response = await axios.put(
-          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address/${selectedAddress._id}`,
+          `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses/update/${selectedAddress.address_id}`,
           selectedAddress,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAddresses((prevAddresses) =>
           prevAddresses.map((address) =>
-            address._id === selectedAddress._id
+            address.address_id === selectedAddress.address_id
               ? response.data.address
               : address
           )
@@ -135,8 +143,13 @@ function AddressPage() {
         setSnackbarOpen(true);
       } else {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/address`,
-          selectedAddress,
+          `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses/create`,
+          {
+            city: selectedAddress.city,
+            district: selectedAddress.district,
+            avenue: selectedAddress.avenue,
+            specific: selectedAddress.specific,
+          },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAddresses([...addresses, response.data.address]);
@@ -171,24 +184,22 @@ function AddressPage() {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell align="center">Tỉnh/thành phố</TableCell>
-              <TableCell align="center">Quận/huyện</TableCell>
-              <TableCell align="center">Phường/Xã</TableCell>
-              <TableCell align="center">Đường</TableCell>
-              <TableCell align="center">Địa chỉ chi tiết</TableCell>
-              <TableCell align="center">Thao tác</TableCell>
+              <TableCell align="left">Tỉnh/thành phố</TableCell>
+              <TableCell align="left">Quận/huyện</TableCell>
+              <TableCell align="left">Phường/Xã</TableCell>
+              <TableCell align="left">Địa chỉ chi tiết</TableCell>
+              <TableCell align="left">Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {addresses.map((row, index) => (
               <TableRow key={index}>
-                <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="center">{row.city}</TableCell>
-                <TableCell align="center">{row.district}</TableCell>
-                <TableCell align="center">{row.ward}</TableCell>
-                <TableCell align="center">{row.avenue}</TableCell>
-                <TableCell align="center">{row.specific_address}</TableCell>
-                <TableCell align="center">
+                <TableCell align="left">{index + 1}</TableCell>
+                <TableCell align="left">{row.city}</TableCell>
+                <TableCell align="left">{row.district}</TableCell>
+                <TableCell align="left">{row.avenue}</TableCell>
+                <TableCell align="left">{row.specific}</TableCell>
+                <TableCell align="left">
                   <Button
                     sx={{ minWidth: "0px" }}
                     onClick={() => handleOpenModal(row)}
@@ -198,7 +209,7 @@ function AddressPage() {
                   <Button
                     sx={{ minWidth: "0px" }}
                     color="error"
-                    onClick={() => handleDelete(row._id)}
+                    onClick={() => handleDelete(row.address_id)}
                   >
                     <Delete />
                   </Button>
@@ -215,7 +226,7 @@ function AddressPage() {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       >
-        <div className="bg-white p-[20px] min-w-[900px] grid grid-cols-2 gap-[40px] rounded-md">
+        <div className="bg-white p-[20px] min-w-[600px] grid grid-cols-2 gap-[20px] rounded-md">
           <TextField
             variant="standard"
             label="Tỉnh/thành phố"
@@ -238,14 +249,6 @@ function AddressPage() {
           <TextField
             variant="standard"
             label="Phường/xã"
-            value={selectedAddress.ward}
-            onChange={(e) =>
-              setSelectedAddress({ ...selectedAddress, ward: e.target.value })
-            }
-          />
-          <TextField
-            variant="standard"
-            label="Số nhà, đường"
             value={selectedAddress.avenue}
             onChange={(e) =>
               setSelectedAddress({ ...selectedAddress, avenue: e.target.value })
@@ -253,12 +256,12 @@ function AddressPage() {
           />
           <TextField
             variant="standard"
-            label="Vị trí cụ thể"
-            value={selectedAddress.specific_address}
+            label="Địa chỉ cụ thể"
+            value={selectedAddress.specific}
             onChange={(e) =>
               setSelectedAddress({
                 ...selectedAddress,
-                specific_address: e.target.value,
+                specific: e.target.value,
               })
             }
           />

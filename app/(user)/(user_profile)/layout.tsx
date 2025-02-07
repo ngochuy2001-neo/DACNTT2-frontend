@@ -2,7 +2,7 @@
 import { List, ListItem } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { getTokenAndAuth } from "../../utils/authentication"; 
+import axios from "axios";
 
 const menuList = [
   { title: "Thông tin khách hàng", url: "/profile" },
@@ -12,7 +12,7 @@ const menuList = [
   },
 ];
 
-function ProfilePage({
+function ProfileLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -20,20 +20,53 @@ function ProfilePage({
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const authorize = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return false;
+    }
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/users/login/check`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        return true;
+      } else {
+        localStorage.removeItem("token");
+        return false;
+      }
+    } catch (error) {
+      console.error("Authorization error:", error);
+      localStorage.removeItem("token");
+      return false;
+    }
+  };
 
   useEffect(() => {
     const authenticateUser = async () => {
-      const token = localStorage.getItem("token");
-      console.log(token);
-      const isAuthenticated = await getTokenAndAuth(token ? token : "", router);
+      const isAuthenticated = await authorize();
       setIsAuthenticated(isAuthenticated);
+      setLoading(false);
+      if (!isAuthenticated) {
+        router.push("/login");
+      }
     };
 
     authenticateUser();
   }, [router]);
 
-  if (!isAuthenticated) {
-    return <div>Loading...</div>; 
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -67,4 +100,4 @@ function ProfilePage({
   );
 }
 
-export default ProfilePage;
+export default ProfileLayout;

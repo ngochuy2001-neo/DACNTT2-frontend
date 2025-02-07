@@ -1,33 +1,81 @@
 "use client";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography, Alert, Snackbar } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [formData, setFormData] = useState({
+    username: "",
+    fullname: "",
+    phoneNumber: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    roleId: "10",
+  });
+  const [error, setError] = useState<string>("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleRegister = () => {
-    if (password === confirmPassword) {
-      axios
-        .post(process.env.NEXT_PUBLIC_LOCAL_API_URL + "/api/user/register/", {
-          email: email,
-          phone_number: phoneNumber,
-          user_name: name,
-          password: password,
-        })
-        .then((response) => {
-          const { message, token } = response.data;
-          console.log(message);
-          localStorage.setItem("token", token);
-        })
-        .catch((error) => console.log(error));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRegister = async () => {
+    try {
+      if (formData.password !== formData.confirmPassword) {
+        setError("Mật khẩu xác nhận không khớp");
+        setOpenSnackbar(true);
+        return;
+      }
+
+      const requiredFields = {
+        username: "Tên đăng nhập",
+        fullname: "Họ và tên",
+        phoneNumber: "Số điện thoại",
+        email: "Email",
+        password: "Mật khẩu",
+      };
+
+      for (const [field, label] of Object.entries(requiredFields)) {
+        if (!formData[field as keyof typeof formData]) {
+          setError(`${label} là bắt buộc`);
+          setOpenSnackbar(true);
+          return;
+        }
+      }
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/api/user/create`,
+        {
+          username: formData.username,
+          fullname: formData.fullname,
+          phoneNumber: formData.phoneNumber,
+          email: formData.email,
+          password: formData.password,
+          roleId: formData.roleId,
+        }
+      );
+
+      if (response.data.success) {
+        router.push("/login");
+      } else {
+        setError(response.data.message);
+        setOpenSnackbar(true);
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Có lỗi xảy ra khi đăng ký");
+      setOpenSnackbar(true);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -35,7 +83,7 @@ function RegisterPage() {
       <div className="bg-white min-w-[500px] px-[40px] py-[30px] rounded-md">
         <div className="flex flex-col items-center">
           <Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
-            Đăng ký
+            Đăng ký
           </Typography>
         </div>
         <div className="flex flex-col gap-[10px]">
@@ -43,42 +91,75 @@ function RegisterPage() {
             size="small"
             variant="standard"
             label="Email"
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
           />
           <TextField
             size="small"
             variant="standard"
-            label="Họ và tên"
-            onChange={(e) => setName(e.target.value)}
+            label="Tên đăng nhập"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
           />
           <TextField
             size="small"
             variant="standard"
-            label="Số điện thoại"
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            label="Họ và tên"
+            name="fullname"
+            value={formData.fullname}
+            onChange={handleChange}
           />
           <TextField
             size="small"
             variant="standard"
-            label="Mật khẩu"
+            label="Số điện thoại"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+          />
+          <TextField
+            size="small"
+            variant="standard"
+            label="Mật khẩu"
             type="password"
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
           />
           <TextField
             size="small"
             variant="standard"
-            label="Xác nhận mật khẩu"
+            label="Xác nhận mật khẩu"
             type="password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
           />
-          <Button variant="contained" onClick={() => handleRegister()}>
-            Đăng ký
+          <Button variant="contained" onClick={handleRegister}>
+            Đăng ký
           </Button>
           <Button onClick={() => router.push("/login")} variant="outlined">
-            Quay lại đăng nhập
+            Quay lại đăng nhập
           </Button>
         </div>
       </div>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
