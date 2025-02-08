@@ -1,101 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import LaptopProductForm from "@/app/components/admin/LaptopProductForm";
+import ProductDetail from "../../components/admin/ProductDetail";
+import CATEGORY from "@/app/utils/constant";
+import { LaptopVariant, Product } from "@/app/utils/interface";
 import { ArrowBack, Laptop, Smartphone } from "@mui/icons-material";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, Modal, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
-type Product = {
-  _id: string;
-  product_id: string;
-  brand_id: string;
-  product_name: string;
-  description: string;
-  cpu_brand: string;
-  vga_brand: string;
-  size: number;
-  feature_img_src: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-};
-
-type Variant = {
-  variant: {
-    _id: string;
-    variant_id: string;
-    product_id: string;
-    variant_name: string;
-    sku: string;
-    price: number;
-    promotion_id: string;
-    stock: number;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
-  field: {
-    whd_size: {
-      width: number;
-      height: number;
-      depth: number;
-    };
-    cpu: {
-      brand: string;
-      name: string;
-      model: string;
-    };
-    vga: {
-      brand: string;
-      name: string;
-      model: string;
-    };
-    ram: {
-      storage: string;
-      slots: number;
-      gears: any[];
-    };
-    _id: string;
-    variant_field_id: string;
-    variant_id: string;
-    part_number: string;
-    mfg_year: number;
-    origin_id: string;
-    weight: number;
-    color_id: string;
-    material: string;
-    max_ram_up: string;
-    max_drive_up: string;
-    drive: {
-      model: string;
-      storage: string;
-      slots: number;
-    };
-    screen: {
-      size: number;
-      resolution: {
-        width: number;
-        height: number;
-      };
-      ratio: string;
-    };
-    port: {
-      wifi: string;
-      bluetooth: string;
-      webcam: string;
-    };
-    os: {
-      name: string;
-      version: string;
-    };
-    power: {
-      capability: string;
-      supply: string;
-    };
-    gears: any[];
-    __v: number;
-  };
-};
 
 function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -103,8 +15,8 @@ function ProductPage() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null
   );
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [variants, setVariants] = useState<Variant[]>([]);
+  const [categoryId, setCategoryId] = useState<"LT" | "CP">("LT");
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   const fetchProducts = async () => {
     try {
@@ -122,8 +34,22 @@ function ProductPage() {
     fetchProducts();
   }, []);
 
-  const handleViewDetails = (productId: string) => {
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/delete/${productId}`
+      );
+      if (response.data.success) {
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
+
+  const handleViewDetails = (productId: string, category_id: "LT" | "CP") => {
     setSelectedProductId(productId);
+    setCategoryId(category_id);
     setDetailMode(true);
   };
 
@@ -132,41 +58,19 @@ function ProductPage() {
     setSelectedProductId(null);
   };
 
-  const fetchProductDetail = async (productId: string) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/detail/${productId}`
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching product detail:", error);
-      return null;
-    }
+  const handleOpenModal = () => {
+    setOpenModal(true);
   };
 
-  const fetchProductVariants = async (productId: string) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/detail/${productId}/variant`
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching product variants:", error);
-      return [];
-    }
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
-  useEffect(() => {
-    if (selectedProductId) {
-      fetchProductDetail(selectedProductId);
-      fetchProductVariants(selectedProductId);
-    }
-  }, [selectedProductId]);
 
   return (
     <div>
       {detailMode ? (
         <div>
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-[20px]">
             <h2 className="text-2xl font-bold">
               Chi tiết sản phẩm ID: {selectedProductId}
             </h2>
@@ -178,14 +82,23 @@ function ProductPage() {
               Quay lại
             </Button>
           </div>
-          <div></div>
+          <div>
+            <ProductDetail
+              selectedProductId={selectedProductId}
+              category_id={CATEGORY[categoryId]}
+            />
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <p className="text-2xl font-bold">Quản lý sản phẩm</p>
             <ButtonGroup variant="contained" color="primary">
-              <Button startIcon={<Laptop />} variant="outlined">
+              <Button
+                startIcon={<Laptop />}
+                variant="outlined"
+                onClick={handleOpenModal}
+              >
                 Thêm Laptop
               </Button>
               <Button startIcon={<Smartphone />} variant="outlined">
@@ -223,11 +136,17 @@ function ProductPage() {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleViewDetails(data.product_id)}
+                    onClick={() =>
+                      handleViewDetails(data.product_id, data.category_id)
+                    }
                   >
                     Xem Chi Tiết
                   </Button>
-                  <Button variant="outlined" color="error">
+                  <Button
+                    onClick={() => handleDeleteProduct(data.product_id)}
+                    variant="outlined"
+                    color="error"
+                  >
                     Xóa
                   </Button>
                 </div>
@@ -236,6 +155,17 @@ function ProductPage() {
           </div>
         </div>
       )}
+      <Modal
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        open={openModal}
+        onClose={handleCloseModal}
+      >
+        <LaptopProductForm
+          fetchProducts={fetchProducts}
+          handleCloseModal={handleCloseModal}
+          editMode={false}
+        />
+      </Modal>
     </div>
   );
 }

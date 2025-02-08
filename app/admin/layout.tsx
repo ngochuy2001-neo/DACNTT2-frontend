@@ -171,6 +171,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
               easing: theme.transitions.easing.easeOut,
               duration: theme.transitions.duration.enteringScreen,
             }),
+            overflow: "scroll",
             padding: "20px",
           }}
         >

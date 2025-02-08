@@ -136,7 +136,7 @@ function UserPage() {
   }, []);
 
   return (
-    <div className="bg-white h-[100%] rounded-md p-[10px]">
+    <div className="bg-white rounded-md p-[10px]">
       <div className="flex items-center w-full justify-between px-[20px]">
         <h1 className="font-bold text-[20px]">Quản lý người dùng</h1>
       </div>

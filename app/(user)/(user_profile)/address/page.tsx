@@ -1,4 +1,5 @@
 "use client";
+import { Address } from "@/app/utils/interface";
 import { Delete, Edit } from "@mui/icons-material";
 import {
   Button,
@@ -15,19 +16,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
-type Address = {
-  _id: string;
-  user_id: string;
-  city: string;
-  district: string;
-  avenue: string;
-  specific: string;
-  create_at: string;
-  update_at: string;
-  address_id: string;
-  __v: number;
-};
 
 function AddressPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);

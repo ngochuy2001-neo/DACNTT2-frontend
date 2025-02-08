@@ -520,7 +520,7 @@ function ProductManagePage() {
           `${process.env.NEXT_PUBLIC_LOCAL_API_URL}/api/laptop/${id}`
         );
         alert("Xóa laptop thành công!");
-        fetchLaptops(); 
+        fetchLaptops();
       } catch (error) {
         console.error("Lỗi khi xóa laptop:", error);
         alert("Có lỗi xảy ra khi xóa laptop!");
@@ -536,7 +536,7 @@ function ProductManagePage() {
       category_id: laptop.category?._id || "",
       brand_id: laptop.brand?._id || "",
       description: laptop.description || "",
-      images: [], 
+      images: [],
       cpu_brand: laptop.cpu_brand,
       vga_brand: laptop.vga_brand,
       size: laptop.size,
@@ -544,7 +544,7 @@ function ProductManagePage() {
         _id: v._id,
         variant_name: v.variant_name,
         price: v.price,
-        images: [], 
+        images: [],
         specifications: {
           part_number: v.specifications?.part_number || "",
           mfg_year: v.specifications?.mfg_year || "",
