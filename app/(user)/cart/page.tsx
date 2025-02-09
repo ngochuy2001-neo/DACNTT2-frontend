@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -17,9 +18,15 @@ import {
   Stack,
   TextField,
   Grid,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import Image from "next/image";
 import { Add, Remove, Delete, LocalShipping } from "@mui/icons-material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   id: string;
@@ -52,231 +59,258 @@ const initialItems: CartItem[] = [
 ];
 
 function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialItems);
-  const [selectAll, setSelectAll] = useState(false);
+  const [cartDetails, setCartDetails] = useState<
+    {
+      _id: string;
+      cart_id: string;
+      variant_id: string;
+      product_img: string;
+      product_name: string;
+      variant_name: string;
+      variant_price: number;
+      promotion_id: string;
+      quantity: number;
+      subtotal: number;
+      __v: number;
+    }[]
+  >([]);
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+  const [addressDetails, setAddressDetails] = useState<
+    {
+      _id: string;
+      address_id: string;
+      user_id: string;
+      city: string;
+      district: string;
+      avenue: string;
+      specific: string;
+      createdAt: string;
+      updatedAt: string;
+      __v: number;
+    }[]
+  >([]);
+
+  const [currentAddressId, setCurrentAddressId] = useState<string>("");
+
+  const router = useRouter();
+
+  const handleRemoveItem = async (variant_id: string) => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5002/cart/remove/${variant_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        fetchCart();
+      } else {
+        console.error("Xóa sản phẩm không thành công");
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi xóa sản phẩm:", error);
+    }
+  };
+
+  const fetchAddress = async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
+    if (res.data.success) {
+      setAddressDetails(res.data.address);
+      setCurrentAddressId(res.data.address[0].address_id);
+    } else {
+      console.error("Lấy địa chỉ không thành công");
+    }
   };
 
-  const handleSelectItem = (id: string) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
+  const checkUser = async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_USER_API_URL}/users/login/check`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
+    console.log(res.data.success);
+
+    if (!res.data.success) {
+      router.push("/login");
+    } else {
+      fetchCart();
+    }
   };
 
-  const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    setCartItems((items) =>
-      items.map((item) => ({ ...item, selected: !selectAll }))
+  const fetchCart = async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/cart`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
+    setCartDetails(res.data.detail);
   };
 
-  const handleRemoveItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
-
-  const calculateTotal = () => {
-    return cartItems
-      .filter((item) => item.selected)
-      .reduce((total, item) => total + item.price * item.quantity, 0);
-  };
+  useEffect(() => {
+    checkUser();
+    fetchAddress();
+  }, []);
 
   return (
     <Box className="max-w-7xl mx-auto py-8 px-4">
       <Typography variant="h4" gutterBottom fontWeight="bold">
         Giỏ hàng của bạn
       </Typography>
-
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <TableContainer
-            component={Paper}
-            elevation={0}
-            sx={{ borderRadius: 2 }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                      color="primary"
-                    />
-                  </TableCell>
-                  <TableCell>Sản phẩm</TableCell>
-                  <TableCell align="right">Đơn giá</TableCell>
-                  <TableCell align="center">Số lượng</TableCell>
-                  <TableCell align="right">Thành tiền</TableCell>
-                  <TableCell align="center">Thao tác</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {cartItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={item.selected}
-                        onChange={() => handleSelectItem(item.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 100,
-                            height: 100,
-                            position: "relative",
-                            borderRadius: 1,
-                            overflow: "hidden",
-                          }}
-                        >
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </Box>
-                        <Typography variant="subtitle1">{item.name}</Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell align="right">
-                      {item.price.toLocaleString()}₫
-                    </TableCell>
-                    <TableCell align="center">
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        alignItems="center"
-                        justifyContent="center"
-                      >
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity - 1)
-                          }
-                          sx={{ border: "1px solid #ddd" }}
-                        >
-                          <Remove fontSize="small" />
-                        </IconButton>
-                        <Typography sx={{ minWidth: 40, textAlign: "center" }}>
-                          {item.quantity}
-                        </Typography>
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity + 1)
-                          }
-                          sx={{ border: "1px solid #ddd" }}
-                        >
-                          <Add fontSize="small" />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-                    <TableCell align="right">
-                      {(item.price * item.quantity).toLocaleString()}₫
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        color="error"
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Paper
-            elevation={0}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Sản phẩm</TableCell>
+              <TableCell align="center">Số lượng</TableCell>
+              <TableCell align="center">Tổng tiền</TableCell>
+              <TableCell align="center">Hành động</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cartDetails.map((item) => (
+              <TableRow key={item._id}>
+                <TableCell>
+                  <div className="flex items-center gap-4">
+                    <div className="h-[100px] w-[100px]">
+                      <img src={`http://${item.product_img}`} alt="" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-[18px]">
+                        {item.product_name}
+                      </div>
+                      <div className="font-bold text-[16px] text-red-600">
+                        {item.variant_price.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </div>
+                      <div>{item.variant_name}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell align="center">{item.quantity}</TableCell>
+                <TableCell align="center">
+                  {item.subtotal.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </TableCell>
+                <TableCell align="center">
+                  <IconButton
+                    onClick={() => handleRemoveItem(item.variant_id)}
+                    color="error"
+                  >
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <div className="grid grid-cols-2 gap-[100px] mt-[30px]">
+        <div className="bg-white shadow-md w-full p-4">
+          <div>
+            <Typography variant="h6" fontWeight="bold">
+              Địa chỉ
+            </Typography>
+          </div>
+          <FormControl
             sx={{
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "#f8f9fa",
+              width: "100%",
             }}
           >
-            <Typography variant="h6" gutterBottom fontWeight="bold">
-              Tổng tiền giỏ hàng
-            </Typography>
-
-            <Stack spacing={2}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography color="text.secondary">Tổng tiền hàng</Typography>
-                <Typography variant="h6">
-                  {calculateTotal().toLocaleString()}₫
-                </Typography>
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography color="text.secondary">Phí vận chuyển</Typography>
-                <Typography
-                  variant="h6"
+            <RadioGroup
+              sx={{
+                width: "100%",
+                display: "grid",
+                gridAutoRow: "auto",
+                gap: "10px",
+              }}
+              value={currentAddressId}
+              onChange={(e) => setCurrentAddressId(e.target.value)}
+            >
+              {addressDetails.map((item) => (
+                <FormControlLabel
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    color: "success.main",
+                    marginLeft: "0px",
+                    "&:hover": {
+                      boxShadow:
+                        " 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                    },
+                    padding: "5px 20px",
+                    borderRadius: "7px",
+                    transition: "0.3s",
+                    boxShadow:
+                      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
                   }}
-                >
-                  <LocalShipping fontSize="small" />
-                  Miễn phí
-                </Typography>
-              </Box>
+                  value={item._id}
+                  key={item.address_id}
+                  control={<Radio />}
+                  label={
+                    <div className="flex">
+                      <Typography>
+                        {item.specific}, {item.avenue}, {item.district}
+                        {", "}
+                        {item.city}
+                      </Typography>
+                    </div>
+                  }
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </div>
 
-              <Divider />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h6">Tổng thanh toán</Typography>
-                <Typography variant="h5" color="error" fontWeight="bold">
-                  {calculateTotal().toLocaleString()}₫
-                </Typography>
-              </Box>
-
+        <div className="bg-white w-full shadow-md p-4 h-fit">
+          <Typography variant="h6" fontWeight="bold">
+            Thống kê đơn hàng
+          </Typography>
+          <div className="flex flex-col justify-between h-full">
+            <div className="mt-4 flex justify-between">
+              <Typography>Số lượng sản phẩm: </Typography>
+              <Typography>
+                {cartDetails.reduce((total, item) => total + item.quantity, 0)}
+              </Typography>
+            </div>
+            <Divider />
+            <div className="mt-4 flex justify-between">
+              <Typography>Tổng tiền: </Typography>
+              <Typography>
+                {cartDetails
+                  .reduce((total, item) => total + item.subtotal, 0)
+                  .toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+              </Typography>
+            </div>
+            <div className="mt-4 flex justify-end">
               <Button
+                sx={{ backgroundColor: "#000", color: "#fff" }}
                 variant="contained"
-                size="large"
-                fullWidth
-                sx={{ mt: 2 }}
-                disabled={!cartItems.some((item) => item.selected)}
               >
                 Thanh toán
               </Button>
-            </Stack>
-          </Paper>
-        </Grid>
-      </Grid>
+            </div>
+          </div>
+        </div>
+      </div>
     </Box>
   );
 }

@@ -46,7 +46,8 @@ function UserLayout({
   return (
     <div>
       <HeaderBar username={username} setUserName={setUserName} />
-      {children}
+      <div className="min-h-[calc(100vh-100px)]">{children}</div>
+
       <Footer />
     </div>
   );

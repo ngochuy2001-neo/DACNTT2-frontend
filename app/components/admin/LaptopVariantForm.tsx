@@ -64,9 +64,9 @@ function LaptopVariantForm({
   const [osName, setOsName] = useState("");
   const [osVersion, setOsVersion] = useState("");
   const [keyboardType, setKeyboardType] = useState("");
-  const [backlit, setBacklit] = useState(false);
+  const [backlit, setBacklit] = useState("false");
   const [numPad, setNumPad] = useState(false);
-  const [touchpad, setTouchpad] = useState(false);
+  const [touchpad, setTouchpad] = useState("false");
   const [power, setPower] = useState("");
   const [supply, setSupply] = useState("");
   const [gear1, setGear1] = useState("");
@@ -161,9 +161,9 @@ function LaptopVariantForm({
         },
         keyboard: {
           type: keyboardType,
-          led: backlit,
+          led: "RGB",
           hasNumpad: numPad,
-          touchpad: touchpad,
+          touchpad: "multi-touch",
         },
         power: {
           capability: power,

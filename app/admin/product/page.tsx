@@ -3,26 +3,27 @@
 import LaptopProductForm from "@/app/components/admin/LaptopProductForm";
 import ProductDetail from "../../components/admin/ProductDetail";
 import CATEGORY from "@/app/utils/constant";
-import { LaptopVariant, Product } from "@/app/utils/interface";
+import { Product } from "@/app/utils/interface";
 import { ArrowBack, Laptop, Smartphone } from "@mui/icons-material";
-import { Button, ButtonGroup, Modal, TextField } from "@mui/material";
+import { Button, ButtonGroup, Modal } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import CellphoneProductForm from "@/app/components/admin/CellphoneProductForm";
 
 function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [detailMode, setDetailMode] = useState<boolean>(false);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
-  );
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [categoryId, setCategoryId] = useState<"LT" | "CP">("LT");
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openCellphoneModal, setOpenCellphoneModal] = useState<boolean>(false);
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products`
       );
+      console.log(response.data.products);
       setProducts(response.data.products);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -34,10 +35,19 @@ function ProductPage() {
     fetchProducts();
   }, []);
 
-  const handleDeleteProduct = async (productId: string) => {
+  const handleDeleteProduct = async (
+    productId: string,
+    category_id: "LT" | "CP"
+  ) => {
+    let keyword;
+    if (category_id === "LT") {
+      keyword = "laptop";
+    } else {
+      keyword = "cellphone";
+    }
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/delete/${productId}`
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/${keyword}/delete/${productId}`
       );
       if (response.data.success) {
         fetchProducts();
@@ -55,7 +65,7 @@ function ProductPage() {
 
   const handleBack = () => {
     setDetailMode(false);
-    setSelectedProductId(null);
+    setSelectedProductId("");
   };
 
   const handleOpenModal = () => {
@@ -64,6 +74,11 @@ function ProductPage() {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+  };
+
+  const handleCloseCellphoneModal = () => {
+    setOpenCellphoneModal(false);
+    fetchProducts();
   };
 
   return (
@@ -101,7 +116,11 @@ function ProductPage() {
               >
                 Thêm Laptop
               </Button>
-              <Button startIcon={<Smartphone />} variant="outlined">
+              <Button
+                onClick={() => setOpenCellphoneModal(true)}
+                startIcon={<Smartphone />}
+                variant="outlined"
+              >
                 Thêm Điện Thoại
               </Button>
             </ButtonGroup>
@@ -110,26 +129,28 @@ function ProductPage() {
             {products.map((data, index) => (
               <div key={index} className="bg-white p-4 rounded-md">
                 <div>
-                  <h2 className="text-2xl font-bold">{data.product_name}</h2>
+                  <h2 className="text-2xl font-bold">
+                    {data.item.product_name}
+                  </h2>
                   <p>
-                    <strong>Brand ID:</strong> {data.brand_id}
+                    <strong>Brand ID:</strong> {data.item.brand_id}
                   </p>
 
                   <p>
-                    <strong>Description:</strong> {data.description}
+                    <strong>Description:</strong> {data.item.description}
                   </p>
                   <p>
-                    <strong>CPU Brand:</strong> {data.cpu_brand}
+                    <strong>CPU Brand:</strong> {data.item.cpu_brand}
                   </p>
                   <p>
-                    <strong>VGA Brand:</strong> {data.vga_brand}
+                    <strong>VGA Brand:</strong> {data.item.vga_brand}
                   </p>
                   <p>
-                    <strong>Size:</strong> {data.size}
+                    <strong>Size:</strong> {data.item.size}
                   </p>
                   <p>
                     <strong>Feature Image Source:</strong>{" "}
-                    {data.feature_img_src}
+                    {data.item.feature_img_src}
                   </p>
                 </div>
                 <div className="flex justify-between mt-4">
@@ -137,13 +158,21 @@ function ProductPage() {
                     variant="contained"
                     color="primary"
                     onClick={() =>
-                      handleViewDetails(data.product_id, data.category_id)
+                      handleViewDetails(
+                        data.item.product_id,
+                        data.item.category_id
+                      )
                     }
                   >
                     Xem Chi Tiết
                   </Button>
                   <Button
-                    onClick={() => handleDeleteProduct(data.product_id)}
+                    onClick={() =>
+                      handleDeleteProduct(
+                        data.item.product_id,
+                        data.item.category_id
+                      )
+                    }
                     variant="outlined"
                     color="error"
                   >
@@ -163,6 +192,17 @@ function ProductPage() {
         <LaptopProductForm
           fetchProducts={fetchProducts}
           handleCloseModal={handleCloseModal}
+          editMode={false}
+        />
+      </Modal>
+      <Modal
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        open={openCellphoneModal}
+        onClose={() => setOpenCellphoneModal(false)}
+      >
+        <CellphoneProductForm
+          fetchProducts={fetchProducts}
+          handleCloseModal={handleCloseCellphoneModal}
           editMode={false}
         />
       </Modal>

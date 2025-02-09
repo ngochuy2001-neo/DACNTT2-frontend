@@ -51,7 +51,7 @@ function RegisterPage() {
       }
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_USER_API_URL}/api/user/create`,
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/users/create`,
         {
           username: formData.username,
           fullname: formData.fullname,

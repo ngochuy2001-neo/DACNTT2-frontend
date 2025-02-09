@@ -14,12 +14,14 @@ import {
 import { ExpandMore } from "@mui/icons-material";
 import LaptopVariantForm from "./LaptopVariantForm";
 import LaptopProductForm from "./LaptopProductForm";
+import CellphoneVariantForm from "./CellphoneVariantForm";
 
 function ProductDetail({
   selectedProductId,
   category_id,
 }: {
   selectedProductId: string;
+  category_id: string;
 }) {
   const [productDetail, setProductDetail] = useState<Laptop | Cellphone | null>(
     null
@@ -27,14 +29,25 @@ function ProductDetail({
 
   const [productVariants, setProductVariants] = useState<LaptopVariant[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditCellphoneModalOpen, setIsEditCellphoneModalOpen] =
+    useState(false);
+
+  const handleCloseEditCellphoneModal = () => {
+    setIsEditCellphoneModalOpen(false);
+    fetchProductDetail();
+  };
+
   const [newVariant, setNewVariant] = useState({
     variant_name: "",
     sku: "",
     price: 0,
     promotion_id: "",
+
     stock: 0,
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCellphoneVariantModalOpen, setIsCellphoneVariantModalOpen] =
+    useState(false);
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
@@ -67,24 +80,12 @@ function ProductDetail({
       if (category_id === "laptop") {
         setProductVariants(response.data.variantsList);
       } else {
-        setProductVariants(response.data.variantsList);
+        console.log(response.data.variantList);
+        setProductVariants(response.data.variantList);
       }
     } catch (error) {
       console.error("Error fetching product variants:", error);
       return [];
-    }
-  };
-
-  const handleAddVariant = async () => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/${category_id}/detail/${selectedProductId}/variant`,
-        newVariant
-      );
-      setProductVariants((prev) => [...prev, response.data.variant]);
-      handleCloseModal();
-    } catch (error) {
-      console.error("Error adding variant:", error);
     }
   };
 
@@ -414,27 +415,158 @@ function ProductDetail({
           </div>
         </div>
       ) : category_id === "cellphone" && productDetail ? (
-        <div>
-          <h1>{productDetail.product_name}</h1>
-          <p>{productDetail.description}</p>
-          <p>OS: {productDetail.os}</p>
-          <p>Size: {productDetail.size} inch</p>
-          <div className="grid grid-cols-4">
-            <div className="bg-white ">
-              <ul>
-                {productVariants?.map((data, index) => (
-                  <li key={index}>
-                    <div>Variant ID: {data.variant.variant_id}</div>
-                    <div>Variant Name: {data.variant.variant_name}</div>
-                    <div>SKU: {data.variant.sku}</div>
-                    <div>Price: {data.variant.price}</div>
-                    <div>Promotion ID: {data.variant.promotion_id}</div>
-                    <div>Stock: {data.variant.stock}</div>
-                  </li>
-                ))}
-              </ul>
+        <div className="flex flex-col gap-[20px]">
+          <div className="bg-white rounded-md p-4">
+            <div>
+              <h1 className="font-bold text-2xl">
+                {productDetail.product_name}
+              </h1>
+              <p>{productDetail.description}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-[20px]">
+              <p>
+                <strong>Thương hiệu CPU:</strong> {productDetail.cpu_brand}
+              </p>
+              <p>
+                <strong>Kích thước:</strong> {productDetail.size} inch
+              </p>
+              <p>
+                <strong>Hệ điều hành</strong> {productDetail.os}
+              </p>
+              <p>
+                <strong>Hình ảnh đặc trưng:</strong>{" "}
+                {productDetail.feature_img_src}
+              </p>
+              <p>
+                <strong>Ngày tạo:</strong>{" "}
+                {new Date(productDetail.createdAt).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Ngày cập nhật:</strong>{" "}
+                {new Date(productDetail.updatedAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
+          <div>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">Các Variant</h2>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setIsCellphoneVariantModalOpen(true)}
+              >
+                Thêm Variant Mới
+              </Button>
+            </div>
+          </div>
+          <div>
+            <div className="grid grid-cols-4 gap-[20px]">
+              {productVariants?.map((data, index) => (
+                <div key={index} className="bg-white rounded-md p-4 h-fit">
+                  <div>Variant ID: {data.variant.variant_id}</div>
+                  <div>Variant Name: {data.variant.variant_name}</div>
+                  <div>SKU: {data.variant.sku}</div>
+                  <div>Price: {data.variant.price}</div>
+                  <div>Promotion ID: {data.variant.promotion_id}</div>
+                  <div>Stock: {data.variant.stock}</div>
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography>Thông tin biến thể Điện Thoại</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {data.field && (
+                        <table className="min-w-full border-collapse border border-gray-300">
+                          <thead>
+                            <tr>
+                              <th className="border border-gray-300 p-2">
+                                Tên trường
+                              </th>
+                              <th className="border border-gray-300 p-2">
+                                Giá trị
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                Kích thước màn hình
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.screen.size} inch
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                Độ phân giải
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.screen.resolution.width} x{" "}
+                                {data.field.screen.resolution.height}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                CPU
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.cpu.name} - {data.field.cpu.version}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                Năm sản xuất
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.mfg_year}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                RAM
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.ram_storage} GB
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                ROM
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.storage.rom} GB
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-300 p-2">
+                                Trọng lượng
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {data.field.weight} kg
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Modal
+            open={isCellphoneVariantModalOpen}
+            onClose={() => setIsCellphoneVariantModalOpen(false)}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CellphoneVariantForm
+              closeModal={() => setIsCellphoneVariantModalOpen(false)}
+              productId={selectedProductId}
+            />
+          </Modal>
         </div>
       ) : (
         <div>Loading...</div>

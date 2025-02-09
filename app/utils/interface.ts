@@ -1,17 +1,20 @@
 type Product = {
-  category_id: "LT" | "CP";
-  _id: string;
-  product_id: string;
-  brand_id: string;
-  product_name: string;
-  description: string;
-  cpu_brand: string;
-  vga_brand: string;
-  size: number;
-  feature_img_src: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+  item: {
+    category_id: "LT" | "CP";
+    _id: string;
+    product_id: string;
+    brand_id: string;
+    product_name: string;
+    description: string;
+    cpu_brand: string;
+    vga_brand: string;
+    size: number;
+    feature_img_src: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };,
+  upload: []
 };
 
 type LaptopVariant = {

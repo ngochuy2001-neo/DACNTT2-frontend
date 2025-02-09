@@ -18,14 +18,23 @@ function LaptopProductForm({
     productName: "",
     productDescription: "",
     cpuBrand: "",
+    price: 0,
     vgaBrand: "",
     productSize: "",
     featureImgSrc: "On Development",
   });
 
+  const [productImages, setProductImages] = useState<File>();
+
   const [brands, setBrands] = useState<
     { brand_id: string; brand_name: string }[]
   >([]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProductImages(e.target.files[0]);
+    }
+  };
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -45,14 +54,14 @@ function LaptopProductForm({
     e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setNewLaptop({ ...newLaptop, [name]: value });
+    setNewLaptop((prev) => ({ ...prev, [name]: value as string }));
   };
 
   const handleEditLaptop = async () => {
     try {
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/update/${productId}`,
-        newLaptop
+        { ...newLaptop }
       );
       if (response.data.success) {
         fetchProducts();
@@ -64,14 +73,30 @@ function LaptopProductForm({
   };
 
   const handleAddLaptop = async () => {
+    let productId;
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/products/laptop/add`,
-        newLaptop
+        { ...newLaptop }
       );
       if (response.data.success) {
-        fetchProducts();
-        handleCloseModal();
+        const formData = new FormData();
+        formData.append("file", productImages as Blob);
+        try {
+          console.log(productImages);
+
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/uploads/upload/${productId}`,
+            formData
+          );
+
+          if (response.data.success) {
+            fetchProducts();
+            handleCloseModal();
+          }
+        } catch (error) {
+          console.error("Error adding laptop:", error);
+        }
       }
     } catch (error) {
       console.error("Error adding laptop:", error);
@@ -89,6 +114,7 @@ function LaptopProductForm({
             brandId: response.data.laptop.brand_id,
             productName: response.data.laptop.product_name,
             productDescription: response.data.laptop.description,
+            price: response.data.laptop.price,
             cpuBrand: response.data.laptop.cpu_brand,
             vgaBrand: response.data.laptop.vga_brand,
             productSize: response.data.laptop.size,
@@ -100,7 +126,7 @@ function LaptopProductForm({
       };
       fetchProductDetail();
     }
-  }, []);
+  }, [editMode, productId]);
 
   return (
     <div className="bg-white rounded-md w-[60vw] max-h-[80vh] p-4 flex flex-col gap-[15px]">
@@ -136,6 +162,15 @@ function LaptopProductForm({
           label="Mô Tả"
           name="productDescription"
           value={newLaptop.productDescription}
+          onChange={handleInputChange}
+          fullWidth
+          variant="standard"
+          sx={{ pt: 0, pb: 0 }}
+        />
+        <TextField
+          label="Giá cơ bản"
+          name="price"
+          value={newLaptop.price}
           onChange={handleInputChange}
           fullWidth
           variant="standard"
@@ -185,15 +220,15 @@ function LaptopProductForm({
           variant="standard"
           sx={{ pt: 0, pb: 0 }}
         />
-        <TextField
-          label="Hình Ảnh Đặc Trưng"
-          name="featureImgSrc"
-          value={newLaptop.featureImgSrc}
-          onChange={handleInputChange}
-          fullWidth
-          variant="standard"
-          sx={{ pt: 0, pb: 0 }}
-        />
+        {!editMode && (
+          <TextField
+            type="file"
+            fullWidth
+            variant="standard"
+            sx={{ pt: 0, pb: 0 }}
+            onChange={handleImageChange}
+          />
+        )}
       </div>
       <div className="flex justify-end gap-[15px]">
         <Button

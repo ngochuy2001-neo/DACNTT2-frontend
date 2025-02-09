@@ -29,13 +29,20 @@ function HeaderBar({
         <Image src={Logo} height={80} alt="logo-image" />
       </div>
       <div className="flex w-[30%] justify-between font-bold">
-        <p className="hover:underline hover:bg-black cursor-pointer hover:text-white p-[10px] duration-200">
+        <p
+          onClick={() => router.push("/cellphone")}
+          className="hover:bg-black rounded-[30px] cursor-pointer hover:text-white p-[10px] duration-200"
+        >
           Điện thoại
         </p>
-        <p className="hover:underline hover:bg-black cursor-pointer hover:text-white p-[10px] duration-200">
+        <p
+          onClick={() => router.push("/laptop")}
+          className="hover:bg-black rounded-[30px] cursor-pointer hover:text-white p-[10px] duration-200"
+        >
           Laptop
         </p>
-        <p className="hover:underline hover:bg-black cursor-pointer hover:text-white p-[10px] duration-200">
+
+        <p className="hover:bg-black rounded-[30px] cursor-pointer hover:text-white p-[10px] duration-200">
           About
         </p>
       </div>
@@ -49,8 +56,22 @@ function HeaderBar({
           </p>
         ) : (
           <div className="flex items-center gap-[20px]">
-            <FavoriteIcon />
-            <ShoppingCartIcon />
+            <ShoppingCartIcon
+              sx={{
+                ":hover": {
+                  cursor: "pointer",
+                  bgcolor: "black",
+                  color: "white",
+                },
+                p: "5px",
+                width: "34px",
+                height: "34px",
+                borderRadius: "30px",
+                overflow: "visible",
+              }}
+              onClick={() => router.push("/cart")}
+            />
+
             <div className="flex items-center gap-[10px]">
               <div>
                 <AccountCircle />
