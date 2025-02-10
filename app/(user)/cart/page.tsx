@@ -10,21 +10,16 @@ import {
   TableRow,
   Paper,
   Button,
-  Checkbox,
   Divider,
   IconButton,
   Typography,
   Box,
-  Stack,
-  TextField,
-  Grid,
   FormControl,
   RadioGroup,
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import Image from "next/image";
-import { Add, Remove, Delete, LocalShipping } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -128,7 +123,7 @@ function CartPage() {
     );
     if (res.data.success) {
       console.log(res.data);
-      router.push("/orders");
+      router.push(`/checkout/${res.data.order.order_id}`);
     } else {
       console.error("Tạo đơn hàng không thành công");
     }
