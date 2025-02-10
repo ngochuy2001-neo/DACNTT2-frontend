@@ -26,63 +26,10 @@ function CompletePage() {
       <TableContainer component={Paper}>
         <div className="flex justify-center"></div>
         <div>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Thông tin</TableCell>
-                <TableCell>Giá trị</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>Số tiền:</TableCell>
-                <TableCell>
-                  {(Number(paramsObject.vnp_Amount) / 100).toLocaleString(
-                    "vi-VN",
-                    {
-                      style: "currency",
-                      currency: "VND",
-                    }
-                  )}
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell>Mã ngân hàng:</TableCell>
-                <TableCell>{paramsObject.vnp_BankCode}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Số giao dịch ngân hàng:</TableCell>
-                <TableCell>{paramsObject.vnp_BankTranNo}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Loại thẻ:</TableCell>
-                <TableCell>{paramsObject.vnp_CardType}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Thông tin đơn hàng:</TableCell>
-                <TableCell>{paramsObject.vnp_OrderInfo}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Ngày thanh toán:</TableCell>
-                <TableCell>{paramsObject.vnp_PayDate}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Số giao dịch:</TableCell>
-                <TableCell>{paramsObject.vnp_TransactionNo}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Trạng thái giao dịch:</TableCell>
-                <TableCell>
-                  {paramsObject.vnp_TransactionStatus === "00"
-                    ? "Giao dịch thành công"
-                    : "Giao dịch không thành công"}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </TableContainer>
+          <div className="flex flex-col items-center">
+            <h3 className="text-2xl font-semibold text-green-600">Giao dịch thành công!</h3>
+            <p className="mt-2 text-lg">Cảm ơn bạn đã thanh toán. Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất.</p>
+          </div>
       <div className="flex justify-center">
         <Button
           onClick={() => router.push("/")}
