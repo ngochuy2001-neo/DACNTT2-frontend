@@ -235,7 +235,7 @@ function LaptopDetail() {
     <div className="px-[16%] py-[64px]">
       <div className="grid grid-cols-2 gap-[94px] mb-[64px]">
         <div className="w-full">
-          {laptopDetails.feature_img_src.length > 0 ? (
+          {laptopDetails.feature_img_src?.length > 0 ? (
             <img className="h-full" src={`http://${productImageUrl}`} alt="" />
           ) : (
             <div className="w-full h-[500px] bg-red-500"></div>
