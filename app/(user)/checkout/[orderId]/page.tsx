@@ -76,13 +76,14 @@ function CheckoutPage() {
   };
 
   const handlePayment = async () => {
-    const paymentUrl = createVnpayPaymentUrl({
-      amount: orderDetails.reduce((acc, item) => acc + item.price, 0),
-      orderInfo: `Thanh toán đơn hàng ${orderId}`,
-      orderType: "pay",
-      returnUrl: "http://localhost:3000/complete",
-    });
-    window.location.href = paymentUrl;
+    await axios
+      .post(process.env.NEXT_PUBLIC_ORDER_API_URL + "/vnp/create_payment_url", {
+        orderId: orderId,
+      })
+      .then((response) => {
+        console.log(response.data);
+        window.location.href = response.data.url;
+      });
   };
 
   useEffect(() => {
