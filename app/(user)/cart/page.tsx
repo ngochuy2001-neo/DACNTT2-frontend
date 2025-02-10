@@ -114,6 +114,26 @@ function CartPage() {
     }
   };
 
+  const handleCheckout = async () => {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_ORDER_API_URL}/orders/create`,
+      {
+        addressId: currentAddressId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    if (res.data.success) {
+      console.log(res.data);
+      router.push("/orders");
+    } else {
+      console.error("Tạo đơn hàng không thành công");
+    }
+  };
+
   const fetchAddress = async () => {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses`,
@@ -302,6 +322,7 @@ function CartPage() {
             </div>
             <div className="mt-4 flex justify-end">
               <Button
+                onClick={handleCheckout}
                 sx={{ backgroundColor: "#000", color: "#fff" }}
                 variant="contained"
               >

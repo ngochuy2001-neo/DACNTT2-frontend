@@ -7,6 +7,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -19,6 +20,7 @@ function LaptopDetail() {
   const [price, setPrice] = useState(0);
   const [variantIndex, setVariantIndex] = useState(0);
   const [productImageUrl, setProductImageUrl] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   const [cellphoneDetails, setCellphoneDetails] = useState({
     id: "",
@@ -121,6 +123,25 @@ function LaptopDetail() {
       _id: "",
     },
   ]);
+
+  const handleAddToCart = async () => {
+    await axios
+      .post(
+        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/cart/add/${variants[variantIndex].variant.variant_id}`,
+        {
+          variant_id: variants[variantIndex].variant.variant_id,
+          quantity: quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      });
+  };
 
   const findOrigin = (originId: string) => {
     return origins.find((origin) => origin.origin_id === originId);
@@ -242,7 +263,42 @@ function LaptopDetail() {
               ))}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col gap-[10px] justify-center">
+              <div className="flex items-center">
+                <Button
+                  onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
+                  variant="outlined"
+                  sx={{
+                    marginRight: "10px",
+                    borderRadius: "100%",
+                    minWidth: "30px",
+                    minHeight: "30px",
+                  }}
+                >
+                  -
+                </Button>
+                <TextField
+                  variant="outlined"
+                  type="number"
+                  value={quantity}
+                  size="small"
+                  onChange={(e) =>
+                    setQuantity(Math.max(1, Number(e.target.value)))
+                  }
+                  sx={{ width: "60px", textAlign: "center" }}
+                />
+                <Button
+                  onClick={() => setQuantity(quantity + 1)}
+                  variant="outlined"
+                  sx={{
+                    marginLeft: "10px",
+                    borderRadius: "30%",
+                    minWidth: "30px",
+                  }}
+                >
+                  +
+                </Button>
+              </div>
               <Button
                 sx={{
                   backgroundColor: "black",
@@ -254,6 +310,7 @@ function LaptopDetail() {
                     color: "white",
                   },
                 }}
+                onClick={handleAddToCart}
                 disabled={variants?.length === 0}
               >
                 {variants.length === 0 ? "Liên hệ sau" : "Thêm vào giỏ hàng"}
