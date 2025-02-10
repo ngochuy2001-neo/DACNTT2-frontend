@@ -10,6 +10,7 @@ import {
   TableRow,
   Paper,
   Button,
+  Typography,
 } from "@mui/material";
 
 function CompletePage() {
@@ -23,13 +24,14 @@ function CompletePage() {
   return (
     <div className="flex flex-col gap-[20px] items-center justify-center py-[30px] px-[20%]">
       <h2 className="text-2xl font-bold">Thông tin giao dịch</h2>
-      <TableContainer component={Paper}>
-        <div className="flex justify-center"></div>
-        <div>
-          <div className="flex flex-col items-center">
-            <h3 className="text-2xl font-semibold text-green-600">Giao dịch thành công!</h3>
-            <p className="mt-2 text-lg">Cảm ơn bạn đã thanh toán. Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất.</p>
-          </div>
+      <div className="flex flex-col items-center w-[500px] shadow-md p-[20px]">
+        <Typography variant="h5" sx={{ textTransform: "uppercase" }}>
+          Giao dịch thành công!!
+        </Typography>
+        <Typography variant="h6">
+          Đơn hàng sẽ được chúng tôi nhanh chóng thực hiện
+        </Typography>
+      </div>
       <div className="flex justify-center">
         <Button
           onClick={() => router.push("/")}
