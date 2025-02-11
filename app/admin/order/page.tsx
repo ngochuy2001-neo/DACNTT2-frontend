@@ -186,7 +186,10 @@ function OrderPage() {
                   {orderItem.order.total_item}
                 </TableCell>
                 <TableCell align="center">
-                  {orderItem.order.total_cost}
+                  {orderItem.order.total_cost.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
                 </TableCell>
                 <TableCell align="center">{orderItem.order.status}</TableCell>
                 <TableCell align="center">

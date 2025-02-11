@@ -39,9 +39,9 @@ function HomepageProductList({
             <div
               onClick={() =>
                 router.push(
-                  `/${data.item.category_id === "LT" ? "laptop" : "celphone"}/${
-                    data.item.product_id
-                  }`
+                  `/${
+                    data.item.category_id === "LT" ? "laptop" : "cellphone"
+                  }/${data.item.product_id}`
                 )
               }
               className="rounded-md shadow-md p-[10px] hover:shadow-2xl duration-500 flex flex-col gap-[20px] hover:cursor-pointer"
@@ -52,8 +52,7 @@ function HomepageProductList({
                 <img
                   src={`http://${data.upload[0].upload_src}`}
                   alt="product-image"
-                  height={200}
-                  width={200}
+                  className="w-[200px] h-[200px] object-contain"
                 />
               ) : (
                 <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center">

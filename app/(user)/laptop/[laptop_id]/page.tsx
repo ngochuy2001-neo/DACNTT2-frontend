@@ -234,7 +234,7 @@ function LaptopDetail() {
   return (
     <div className="px-[16%] py-[64px]">
       <div className="grid grid-cols-2 gap-[94px] mb-[64px]">
-        <div className="w-full">
+        <div className="w-full flex items-center justify-center">
           {laptopDetails.feature_img_src?.length > 0 ? (
             <img className="h-full" src={`http://${productImageUrl}`} alt="" />
           ) : (

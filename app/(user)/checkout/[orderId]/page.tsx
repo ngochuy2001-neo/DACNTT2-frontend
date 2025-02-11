@@ -106,7 +106,7 @@ function CheckoutPage() {
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", borderBottom: "none" }}>
                 {orderDetails
-                  .reduce((acc, item) => acc + item.quantity * item.price, 0)
+                  .reduce((acc, item) => acc + item.price, 0)
                   .toLocaleString("vi-VN", {
                     currency: "VND",
                     style: "currency",

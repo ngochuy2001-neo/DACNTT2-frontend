@@ -73,9 +73,9 @@ function CellphoneProductPage() {
               key={cellphones._id}
               className="flex flex-col items-center gap-2 hover:cursor-pointer hover:shadow-lg duration-300 rounded-lg"
             >
-              <div className="w-[200px] h-[200px] bg-gray-200 rounded-lg">
+              <div className="w-[200px] h-[200px] rounded-lg">
                 <img
-                  className="w-[200px] h-[200px] object-cover"
+                  className="w-[200px] h-[200px] object-contain"
                   src={`http://${cellphones.feature_img_src}`}
                   alt={cellphones.product_name}
                   width={200}

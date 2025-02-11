@@ -383,9 +383,6 @@ function ProductDetail({
                   </AccordionDetails>
                 </Accordion>
                 <div className="flex gap-2 mt-2">
-                  <Button variant="outlined" color="primary">
-                    Chỉnh sửa
-                  </Button>
                   <Button
                     variant="outlined"
                     color="error"
@@ -555,7 +552,7 @@ function ProductDetail({
           </div>
           <Modal
             open={isCellphoneVariantModalOpen}
-            onClose={() => setIsCellphoneVariantModalOpen(false)}
+            onClose={handleCloseEditCellphoneModal}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -563,7 +560,7 @@ function ProductDetail({
             }}
           >
             <CellphoneVariantForm
-              closeModal={() => setIsCellphoneVariantModalOpen(false)}
+              closeModal={handleCloseEditCellphoneModal}
               productId={selectedProductId}
             />
           </Modal>

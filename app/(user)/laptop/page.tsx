@@ -150,7 +150,7 @@ function LaptopProductPage() {
                   <img
                     src={`http://${laptop.feature_img_src}`}
                     alt=""
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ) : (

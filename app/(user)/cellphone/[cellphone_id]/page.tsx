@@ -36,7 +36,7 @@ function LaptopDetail() {
       height: 0,
       depth: 0,
     },
-    featureImage: "",
+    feature_img_src: "",
     categoryId: "",
     price: 0,
     createdAt: "",
@@ -215,12 +215,16 @@ function LaptopDetail() {
   return (
     <div className="px-[16%] py-[64px]">
       <div className="grid grid-cols-2 gap-[94px] mb-[64px]">
-        <div className="w-full">
-          {/* {cellphoneDetails?.feature_img_src?.length > 0 ? (
-            <img className="h-full" src={`http://${productImageUrl}`} alt="" />
+        <div className="w-full flex items-center justify-center">
+          {cellphoneDetails?.feature_img_src ? (
+            <img
+              className="h-full"
+              src={`http://${cellphoneDetails.feature_img_src}`}
+              alt=""
+            />
           ) : (
             <div className="w-full h-[500px] bg-red-500"></div>
-          )} */}
+          )}
         </div>
         <div className="w-ful flex flex-col justify-between">
           <div>

@@ -208,7 +208,9 @@ function LaptopVariantForm({
         data
       );
       console.log(response.data);
-      closeModal();
+      if (response.data.success) {
+        closeModal();
+      }
     } catch (error) {
       console.error("Có lỗi xảy ra khi thêm variant:", error);
     }
@@ -550,6 +552,7 @@ function LaptopVariantForm({
                 <MenuItem value="i3">i3</MenuItem>
                 <MenuItem value="i5">i5</MenuItem>
                 <MenuItem value="i7">i7</MenuItem>
+                <MenuItem value="Ultra">Ultra</MenuItem>
                 <MenuItem value="ryzen3">Ryzen 3</MenuItem>
                 <MenuItem value="ryzen5">Ryzen 5</MenuItem>
                 <MenuItem value="ryzen7">Ryzen 7</MenuItem>
@@ -633,14 +636,18 @@ function LaptopVariantForm({
                 <MenuItem value="ddr5">DDR5</MenuItem>
               </Select>
             </FormControl>
-            <TextField
-              label="Dung lượng RAM"
-              variant="standard"
-              fullWidth
-              required
-              value={ramCapacity}
-              onChange={(e) => setRamCapacity(e.target.value)}
-            />
+            <FormControl fullWidth variant="standard">
+              <InputLabel>Dung lượng RAM</InputLabel>
+              <Select
+                value={ramCapacity}
+                onChange={(e) => setRamCapacity(e.target.value)}
+              >
+                <MenuItem value={4}>4 GB</MenuItem>
+                <MenuItem value={8}>8 GB</MenuItem>
+                <MenuItem value={16}>16 GB</MenuItem>
+                <MenuItem value={32}>32 GB</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Số khe RAM"
               variant="standard"
@@ -655,39 +662,42 @@ function LaptopVariantForm({
         <div>
           <Typography variant="h6">Ổ đĩa</Typography>
           <div className="grid grid-cols-4 gap-4">
-            <TextField
-              label="Loại ổ đĩa"
-              variant="standard"
-              fullWidth
-              required
-              value={diskType}
-              onChange={(e) => setDiskType(e.target.value)}
-              onFocus={() => {
-                if (diskType === "") setDiskType("");
-              }}
-            />
-            <TextField
-              label="Mẫu ổ đĩa"
-              variant="standard"
-              fullWidth
-              required
-              value={diskModel}
-              onChange={(e) => setDiskModel(e.target.value)}
-              onFocus={() => {
-                if (diskModel === "") setDiskModel("");
-              }}
-            />
-            <TextField
-              label="Dung lượng ổ đĩa"
-              variant="standard"
-              fullWidth
-              required
-              value={diskCapacity}
-              onChange={(e) => setDiskCapacity(e.target.value)}
-              onFocus={() => {
-                if (diskCapacity.toString() === "") setDiskCapacity("");
-              }}
-            />
+            <FormControl fullWidth variant="standard">
+              <InputLabel>Loại ổ đĩa</InputLabel>
+              <Select
+                value={diskType}
+                onChange={(e) => setDiskType(e.target.value)}
+              >
+                <MenuItem value="ssd">SSD</MenuItem>
+                <MenuItem value="hdd">HDD</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth variant="standard">
+              <InputLabel>Loại ổ đĩa</InputLabel>
+              <Select
+                value={diskModel}
+                onChange={(e) => setDiskModel(e.target.value)}
+                required
+              >
+                <MenuItem value="M2 NVME">M2 NVME</MenuItem>
+                <MenuItem value="M2 SATA">M2 SATA</MenuItem>
+                <MenuItem value="2.5 inch">2.5 inch</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth variant="standard">
+              <InputLabel>Dung lượng ổ đĩa</InputLabel>
+              <Select
+                value={diskCapacity}
+                onChange={(e) => setDiskCapacity(e.target.value)}
+                required
+              >
+                <MenuItem value={128}>128 GB</MenuItem>
+                <MenuItem value={256}>256 GB</MenuItem>
+                <MenuItem value={512}>512 GB</MenuItem>
+                <MenuItem value={1024}>1 TB</MenuItem>
+                <MenuItem value={2048}>2 TB</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Số khe ổ đĩa"
               variant="standard"
@@ -711,17 +721,19 @@ function LaptopVariantForm({
               value={screenSize === 0 ? "" : screenSize}
               onChange={(e) => setScreenSize(Number(e.target.value))}
             />
-            <TextField
-              label="Loại màn hình"
-              variant="standard"
-              fullWidth
-              required
-              value={screenType}
-              onChange={(e) => setScreenType(e.target.value)}
-              onFocus={() => {
-                if (screenType === "") setScreenType("");
-              }}
-            />
+            <FormControl fullWidth variant="standard" required>
+              <InputLabel>Loại màn hình</InputLabel>
+              <Select
+                value={screenType}
+                onChange={(e) => setScreenType(e.target.value)}
+              >
+                <MenuItem value="IPS">IPS</MenuItem>
+                <MenuItem value="TN">TN</MenuItem>
+                <MenuItem value="VA">VA</MenuItem>
+                <MenuItem value="OLED">OLED</MenuItem>
+                <MenuItem value="Mini LED">Mini LED</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Độ phân giải (Rộng)"
               variant="standard"
@@ -740,15 +752,19 @@ function LaptopVariantForm({
               value={resolutionHeight === 0 ? "" : resolutionHeight}
               onChange={(e) => setResolutionHeight(Number(e.target.value))}
             />
-            <TextField
-              label="Tần số làm mới"
-              variant="standard"
-              type="number"
-              fullWidth
-              required
-              value={refreshRate === 0 ? "" : refreshRate}
-              onChange={(e) => setRefreshRate(Number(e.target.value))}
-            />
+            <FormControl fullWidth variant="standard" required>
+              <InputLabel>Tần số làm mới</InputLabel>
+              <Select
+                value={refreshRate}
+                onChange={(e) => setRefreshRate(Number(e.target.value))}
+              >
+                <MenuItem value={60}>60 Hz</MenuItem>
+                <MenuItem value={120}>120 Hz</MenuItem>
+                <MenuItem value={144}>144 Hz</MenuItem>
+                <MenuItem value={240}>240 Hz</MenuItem>
+                <MenuItem value={360}>360 Hz</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Tỷ lệ màu"
               variant="standard"
@@ -758,17 +774,22 @@ function LaptopVariantForm({
               value={colorRatio === 0 ? "" : colorRatio}
               onChange={(e) => setColorRatio(Number(e.target.value))}
             />
-            <TextField
-              label="Tỷ lệ màn hình"
-              variant="standard"
-              fullWidth
-              required
-              value={screenRatio}
-              onChange={(e) => setScreenRatio(e.target.value)}
-              onFocus={() => {
-                if (screenRatio === "") setScreenRatio("");
-              }}
-            />
+            <FormControl fullWidth variant="standard" required>
+              <InputLabel id="screen-ratio-select-label">
+                Tỷ lệ màn hình
+              </InputLabel>
+              <Select
+                labelId="screen-ratio-select-label"
+                value={screenRatio}
+                onChange={(e) => setScreenRatio(e.target.value)}
+              >
+                <MenuItem value="16:9">16:9</MenuItem>
+                <MenuItem value="16:10">16:10</MenuItem>
+                <MenuItem value="4:3">4:3</MenuItem>
+                <MenuItem value="21:9">21:9</MenuItem>
+                <MenuItem value="3:2">3:2</MenuItem>
+              </Select>
+            </FormControl>
           </div>
         </div>
         <div>
@@ -870,26 +891,6 @@ function LaptopVariantForm({
             />
           </div>
         </div>
-        <TextField
-          label="Gear 1"
-          variant="standard"
-          fullWidth
-          value={gear1}
-          onChange={(e) => setGear1(e.target.value)}
-          onFocus={() => {
-            if (gear1 === "") setGear1("");
-          }}
-        />
-        <TextField
-          label="Gear 2"
-          variant="standard"
-          fullWidth
-          value={gear2}
-          onChange={(e) => setGear2(e.target.value)}
-          onFocus={() => {
-            if (gear2 === "") setGear2("");
-          }}
-        />
       </div>
       <div className="flex justify-between mt-4">
         <Button color="error" variant="contained" onClick={closeModal}>

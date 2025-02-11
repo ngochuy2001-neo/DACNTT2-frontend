@@ -74,6 +74,7 @@ function ProductPage() {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+    fetchProducts();
   };
 
   const handleCloseCellphoneModal = () => {
