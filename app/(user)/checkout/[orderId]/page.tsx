@@ -119,7 +119,12 @@ function CheckoutPage() {
               <TableRow key={item._id}>
                 <TableCell>{item.product_name}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
-                <TableCell>{item.price}</TableCell>
+                <TableCell>
+                  {item.price.toLocaleString("vi-VN", {
+                    currency: "VND",
+                    style: "currency",
+                  })}
+                </TableCell>
               </TableRow>
             ))}
             <TableRow sx={{ borderBottom: "none" }}>
@@ -130,7 +135,12 @@ function CheckoutPage() {
                 Tổng tiền
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", borderBottom: "none" }}>
-                {orderDetails.reduce((acc, item) => acc + item.price, 0)}
+                {orderDetails
+                  .reduce((acc, item) => acc + item.quantity * item.price, 0)
+                  .toLocaleString("vi-VN", {
+                    currency: "VND",
+                    style: "currency",
+                  })}
               </TableCell>
             </TableRow>
           </TableBody>

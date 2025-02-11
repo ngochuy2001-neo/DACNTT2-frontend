@@ -37,6 +37,8 @@ const adminMenuList = [
   { name: "Quản lý phân loại", url: "/admin/category" },
   { name: "Quản lý phương thức thanh toán", url: "/admin/paymentmethod" },
   { name: "Quản lý thiết bị ", url: "/admin/product" },
+  { name: "Quản lý đơn hàng", url: "/admin/order" },
+  { name: "Quản lý giao hàng", url: "/admin/shipping" },
 ];
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
