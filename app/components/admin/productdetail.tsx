@@ -361,16 +361,6 @@ function ProductDetail({
                           </tr>
                           <tr>
                             <td className="border border-gray-300 p-2">
-                              Phụ kiện
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              {data.field.gears.map((gear, index) => (
-                                <li key={index}>{gear.name}</li>
-                              ))}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2">
                               Năm sản xuất
                             </td>
                             <td className="border border-gray-300 p-2">

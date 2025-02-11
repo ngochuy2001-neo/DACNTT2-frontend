@@ -3,6 +3,7 @@
 import {
   Button,
   Divider,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -124,23 +125,43 @@ function LaptopDetail() {
     },
   ]);
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   const handleAddToCart = async () => {
-    await axios
-      .post(
-        `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/cart/add/${variants[variantIndex].variant.variant_id}`,
-        {
-          variant_id: variants[variantIndex].variant.variant_id,
-          quantity: quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+    try {
+      await axios
+        .post(
+          `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/cart/add/${variants[variantIndex].variant.variant_id}`,
+          {
+            variant_id: variants[variantIndex].variant.variant_id,
+            quantity: quantity,
           },
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-      });
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.success) {
+            setOpenSnackbar(true);
+            setSnackbarMessage("Sản phẩm đã được thêm vào giỏ hàng");
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarMessage("Bạn không thể thêm sản phẩm vào giỏ hàng");
+          }
+        });
+    } catch (error) {
+      console.log(error);
+      setOpenSnackbar(true);
+      setSnackbarMessage("Lỗi khi thêm sản phẩm vào giỏ hàng");
+    }
   };
 
   const findOrigin = (originId: string) => {
@@ -478,6 +499,13 @@ function LaptopDetail() {
           )}
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+        key={snackbarMessage}
+      />
     </div>
   );
 }

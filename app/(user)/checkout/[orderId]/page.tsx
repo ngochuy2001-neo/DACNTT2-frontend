@@ -115,22 +115,6 @@ function CheckoutPage() {
             </TableRow>
           </TableBody>
         </Table>
-        <div className="mt-[20px]">
-          <Typography sx={{ fontWeight: "bold" }}>
-            Phương thức thanh toán
-          </Typography>
-          <RadioGroup
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-          >
-            <FormControlLabel
-              value="cash"
-              control={<Radio />}
-              label="Tiền mặt"
-            />
-            <FormControlLabel value="VNPay" control={<Radio />} label="VNPay" />
-          </RadioGroup>
-        </div>
         <div className="mt-[20px] flex justify-end">
           <Button onClick={handlePayment} variant="contained" color="primary">
             Thanh toán

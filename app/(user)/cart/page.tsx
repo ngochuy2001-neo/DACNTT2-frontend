@@ -18,6 +18,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Snackbar,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import axios from "axios";
@@ -85,6 +86,13 @@ function CartPage() {
     }[]
   >([]);
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   const [currentAddressId, setCurrentAddressId] = useState<string>("");
 
   const router = useRouter();
@@ -110,6 +118,13 @@ function CartPage() {
   };
 
   const handleCheckout = async () => {
+    if (currentAddressId === "") {
+      setOpenSnackbar(true);
+      setSnackbarMessage(
+        "Bạn chưa có địa chỉ vui lòng thêm địa chỉ ở trang cá nhân"
+      );
+      return;
+    }
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_ORDER_API_URL}/orders/create`,
       {
@@ -333,6 +348,13 @@ function CartPage() {
           </div>
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+        key={snackbarMessage}
+      />
     </Box>
   );
 }
