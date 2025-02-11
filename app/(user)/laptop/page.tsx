@@ -138,26 +138,41 @@ function LaptopProductPage() {
       </div>
 
       <div className="max-w-7xl mx-auto py-8 px-4">
-        <div className="grid grid-cols-4 gap-4 ">
+        <div className="grid grid-cols-5 gap-4 ">
           {laptops.map((laptop) => (
             <div
               onClick={() => router.push(`/laptop/${laptop.product_id}`)}
               key={laptop._id}
-              className="flex flex-col gap-2 hover:cursor-pointer hover:shadow-lg duration-300 rounded-lg"
+              className="flex flex-col items-center gap-2 hover:cursor-pointer hover:shadow-lg duration-300 rounded-lg"
             >
-              <div className="w-full h-[180px]  rounded-lg">
-                <img
-                  src={`http://${laptop.feature_img_src}`}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <div className="p-2">
+              {laptop.feature_img_src ? (
+                <div className="w-[200px] h-[200px] rounded-lg">
+                  <img
+                    src={`http://${laptop.feature_img_src}`}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-[200px] w-[200px] bg-gray"></div>
+              )}
+              <div className="p-2 w-full">
                 <Typography sx={{ fontWeight: "bold" }} variant="h6">
                   {laptop.product_name}
                 </Typography>
-                <Typography variant="body1">{laptop?.price}</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#b01207",
+                    fontSize: "18px",
+                  }}
+                >
+                  {laptop?.price?.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Typography>
               </div>
               <div></div>
             </div>

@@ -44,7 +44,7 @@ function HomepageProductList({
                   }`
                 )
               }
-              className="rounded-md shadow-xl p-[10px] hover:shadow-2xl duration-500 flex flex-col gap-[20px] hover:cursor-pointer"
+              className="rounded-md shadow-md p-[10px] hover:shadow-2xl duration-500 flex flex-col gap-[20px] hover:cursor-pointer"
               key={index}
             >
               {data.upload.length > 0 ? (
@@ -52,8 +52,8 @@ function HomepageProductList({
                 <img
                   src={`http://${data.upload[0].upload_src}`}
                   alt="product-image"
-                  height={1000}
-                  width={1000}
+                  height={200}
+                  width={200}
                 />
               ) : (
                 <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center">
@@ -66,7 +66,6 @@ function HomepageProductList({
                   style: "currency",
                   currency: "VND",
                 })}{" "}
-                VND
               </p>
             </div>
           ))}

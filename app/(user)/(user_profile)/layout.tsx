@@ -9,6 +9,7 @@ const menuList = [
   { title: "Quản lý địa chỉ", url: "/address" },
   {
     title: "Quản lý đơn hàng",
+    url: "/order_history",
   },
 ];
 
@@ -70,7 +71,7 @@ function ProfileLayout({
   }
 
   return (
-    <div className="flex py-[30px] px-[200px] bg-[#f3f4f6] gap-[20px] min-h-[547px]">
+    <div className="flex py-[30px] px-[200px] bg-[#f3f4f6] gap-[20px] min-h-[547px] h-full">
       <div className="w-[20%] shadow-md rounded-2xl overflow-hidden bg-white">
         <List sx={{ backgroundColor: "white" }}>
           {menuList.map((data, index) => (

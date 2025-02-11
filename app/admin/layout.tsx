@@ -15,27 +15,17 @@ import {
   AccordionDetails,
   Typography,
 } from "@mui/material";
-import {
-  ExpandMore,
-  Laptop,
-  PointOfSale,
-  Smartphone,
-  Style,
-  Tag,
-} from "@mui/icons-material";
+import { ExpandMore } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const userMenuList = [
   { name: "Thông tin người dùng", url: "/admin/user" },
   { name: "Quản lý địa chỉ", url: "/admin/addresses" },
-  { name: "Quản lý đơn hàng", url: "/user/orders" },
 ];
 
 const adminMenuList = [
   { name: "Quản lý thương hiệu", url: "/admin/brand" },
-  { name: "Quản lý phân loại", url: "/admin/category" },
-  { name: "Quản lý phương thức thanh toán", url: "/admin/paymentmethod" },
   { name: "Quản lý thiết bị ", url: "/admin/product" },
   { name: "Quản lý đơn hàng", url: "/admin/order" },
   { name: "Quản lý giao hàng", url: "/admin/shipping" },
@@ -81,7 +71,6 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Gọi hàm checkUserRole khi component được mount
   React.useEffect(() => {
     checkUserRole();
   }, []);

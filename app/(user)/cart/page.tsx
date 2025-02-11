@@ -130,19 +130,25 @@ function CartPage() {
   };
 
   const fetchAddress = async () => {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_USER_API_URL}/addresses`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        setAddressDetails(res.data.address);
+        if (res.data.address.length > 0) {
+          setCurrentAddressId(res.data.address[0].address_id);
+        }
+      } else {
+        console.error("Lấy địa chỉ không thành công");
       }
-    );
-    if (res.data.success) {
-      setAddressDetails(res.data.address);
-      setCurrentAddressId(res.data.address[0].address_id);
-    } else {
-      console.error("Lấy địa chỉ không thành công");
+    } catch (error) {
+      console.error("Lấy địa chỉ không thành công:", error);
     }
   };
 

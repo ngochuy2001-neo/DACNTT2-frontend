@@ -27,7 +27,7 @@ function HeaderBar({
   };
   return (
     <div className="border-b-[2px] h-[100px] border-black px-[75px] flex items-center justify-around">
-      <div>
+      <div className="hover:cursor-pointer" onClick={() => router.push("/")}>
         <Image src={Logo} height={80} alt="logo-image" />
       </div>
       <div className="flex w-[30%] justify-between font-bold">
@@ -50,7 +50,7 @@ function HeaderBar({
       </div>
       <div className="flex gap-[20px] items-center">
         {username === "" ? (
-          <div>
+          <div className="flex gap-[10px]">
             <p
               onClick={() => router.push("/login")}
               className="hover:underline cursor-pointer p-[10px] duration-200"

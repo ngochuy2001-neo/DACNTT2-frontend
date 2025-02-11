@@ -81,10 +81,10 @@ function LaptopProductForm({
       );
       if (response.data.success) {
         const formData = new FormData();
+        productId = response.data.product.product_id;
         formData.append("file", productImages as Blob);
         try {
           console.log(productImages);
-
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_PRODUCT_API_URL}/uploads/upload/${productId}`,
             formData

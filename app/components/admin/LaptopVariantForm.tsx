@@ -335,17 +335,20 @@ function LaptopVariantForm({
               ))}
             </Select>
           </FormControl>
-          <TextField
-            label="Chất liệu"
-            variant="standard"
-            fullWidth
-            required
-            value={material}
-            onChange={(e) => setMaterial(e.target.value)}
-            onFocus={() => {
-              if (material === "") setMaterial("");
-            }}
-          />
+          <FormControl fullWidth variant="standard">
+            <InputLabel id="material-select-label">Chất liệu</InputLabel>
+            <Select
+              labelId="material-select-label"
+              variant="standard"
+              fullWidth
+              required
+              value={material}
+              onChange={(e) => setMaterial(e.target.value)}
+            >
+              <MenuItem value="nhựa">Nhựa</MenuItem>
+              <MenuItem value="kim loại">Kim loại</MenuItem>
+            </Select>
+          </FormControl>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>

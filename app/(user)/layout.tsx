@@ -29,7 +29,7 @@ function UserLayout({
       if (response.data.success) {
         const userData = response.data.user;
         console.log(userData);
-        setUserName(userData.username);
+        setUserName(userData.fullname);
         setRole(userData.role);
       } else {
         localStorage.removeItem("token");
@@ -50,8 +50,7 @@ function UserLayout({
   return (
     <div>
       <HeaderBar username={username} setUserName={setUserName} role={role} />
-      <div className="min-h-[calc(100vh-100px)]">{children}</div>
-
+      <div className="min-h-[calc(100vh-100px-264px)]">{children}</div>
       <Footer />
     </div>
   );
