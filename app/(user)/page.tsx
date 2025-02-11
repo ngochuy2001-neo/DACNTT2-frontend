@@ -8,6 +8,7 @@ import HomepageProductList from "../components/homepage/HomepageProductList";
 import axios from "axios";
 import { Button, Typography } from "@mui/material";
 import CellphoneImage from "../../public/assets/images/homepage/cellphone.jpg";
+import LaptopImage from "../../public/assets/images/homepage/laptop.jpg";
 
 const topProduct = [
   {
@@ -154,7 +155,7 @@ export default function Home() {
           <div>
             <img
               className="h-[400px] w-full rounded-lg"
-              src={CellphoneImage.src}
+              src={LaptopImage.src}
               alt="cellphone"
             />
           </div>

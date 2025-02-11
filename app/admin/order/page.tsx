@@ -163,7 +163,7 @@ function OrderPage() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Số thứ tự</TableCell>
+              <TableCell align="center">STT</TableCell>
               <TableCell align="center">Tên người dùng</TableCell>
               <TableCell align="center">Số điện thoại</TableCell>
               <TableCell align="center">Tổng số mặt hàng</TableCell>
@@ -235,7 +235,6 @@ function OrderPage() {
                 <TableCell>Tên sản phẩm</TableCell>
                 <TableCell>Số lượng</TableCell>
                 <TableCell>Giá</TableCell>
-                <TableCell>Hình ảnh</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -244,7 +243,6 @@ function OrderPage() {
                   <TableCell>{item.product_name}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.price}</TableCell>
-                  <TableCell>{item.product_img}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
