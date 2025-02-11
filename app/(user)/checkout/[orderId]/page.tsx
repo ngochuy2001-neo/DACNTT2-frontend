@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { createVnpayPaymentUrl } from "@/app/utils/vnpay";
+import {} from "@/app/utils/vnpay";
 
 function CheckoutPage() {
   const [orderDetails, setOrderDetails] = useState<
@@ -31,35 +31,6 @@ function CheckoutPage() {
       __v: number;
     }[]
   >([]);
-  const [orderInformation, setOrderInformation] = useState<{
-    _id: string;
-    order_id: string;
-    user_id: string;
-    fullname: string;
-    phone_number: string;
-    address_id: string;
-    total_item: number;
-    total_price: number;
-    delivery_cost: number;
-    discount_amount: number;
-    total_cost: number;
-    status: string;
-    __v: number;
-  }>({
-    _id: "",
-    order_id: "",
-    user_id: "",
-    fullname: "",
-    phone_number: "",
-    address_id: "",
-    total_item: 0,
-    total_price: 0,
-    delivery_cost: 0,
-    discount_amount: 0,
-    total_cost: 0,
-    status: "",
-    __v: 0,
-  });
 
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
 
@@ -71,7 +42,6 @@ function CheckoutPage() {
     if (res.data.success) {
       console.log(res.data.order);
       setOrderDetails(res.data.detail);
-      setOrderInformation(res.data.order);
     }
   };
 

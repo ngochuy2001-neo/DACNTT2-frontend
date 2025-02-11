@@ -68,8 +68,8 @@ function LoginPage() {
   }, []);
 
   return (
-    <div className="bg-login-background bg-center bg-cover h-[100vh] flex justify-center items-center">
-      <div className="bg-white h-fit flex flex-col items-center justify-center gap-[10px] p-[30px] w-[30%]">
+    <div className="bg-login-background bg-center bg-cover h-[100vh] flex items-center">
+      <div className="bg-white h-full flex flex-col items-center justify-center gap-[10px] p-[30px] w-[30%]">
         <Typography sx={{ fontWeight: "bold" }}>ĐĂNG NHẬP</Typography>
         <form className="flex flex-col items-center gap-[20px] w-full">
           <TextField
@@ -92,21 +92,18 @@ function LoginPage() {
           <Button
             onClick={handleLogin}
             variant="contained"
-            sx={{ width: "40%" }}
+            sx={{ width: "100%" }}
           >
             Đăng nhập
           </Button>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "white", color: "black", width: "40%" }}
+            sx={{ backgroundColor: "white", color: "black", width: "100%" }}
+            onClick={() => router.push("/register")}
           >
             Đăng ký
           </Button>
         </form>
-        <p>Bạn không nhớ mật khẩu?</p>
-        <p className="text-blue-700 underline cursor-pointer hover:text-red-700">
-          Quên mật khẩu
-        </p>
       </div>
 
       <Snackbar

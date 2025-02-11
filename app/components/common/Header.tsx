@@ -11,9 +11,11 @@ import { useRouter } from "next/navigation";
 function HeaderBar({
   username,
   setUserName,
+  role,
 }: {
   username?: string;
   setUserName: React.Dispatch<SetStateAction<string>>;
+  role?: string;
 }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,12 +50,20 @@ function HeaderBar({
       </div>
       <div className="flex gap-[20px] items-center">
         {username === "" ? (
-          <p
-            onClick={() => router.push("/login")}
-            className="hover:underline cursor-pointer p-[10px] duration-200"
-          >
-            Sign Up
-          </p>
+          <div>
+            <p
+              onClick={() => router.push("/login")}
+              className="hover:underline cursor-pointer p-[10px] duration-200"
+            >
+              Đăng nhập
+            </p>
+            <p
+              onClick={() => router.push("/register")}
+              className="hover:underline cursor-pointer p-[10px] duration-200"
+            >
+              Đăng ký
+            </p>
+          </div>
         ) : (
           <div className="flex items-center gap-[20px]">
             <ShoppingCartIcon
@@ -96,6 +106,11 @@ function HeaderBar({
                   >
                     Thông tin người dùng
                   </MenuItem>
+                  {role?.toLowerCase() === "admin" && (
+                    <MenuItem onClick={() => router.push("/admin")}>
+                      Đến trang quản lý
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
                 </Menu>
               </div>

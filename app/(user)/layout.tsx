@@ -10,6 +10,7 @@ function UserLayout({
   children: React.ReactNode;
 }>) {
   const [username, setUserName] = useState<string>("");
+  const [role, setRole] = useState<string>("");
 
   const authorize = async () => {
     try {
@@ -27,10 +28,13 @@ function UserLayout({
 
       if (response.data.success) {
         const userData = response.data.user;
+        console.log(userData);
         setUserName(userData.username);
+        setRole(userData.role);
       } else {
         localStorage.removeItem("token");
         setUserName("");
+        setRole("");
       }
     } catch (error) {
       console.error("Authorization error:", error);
@@ -45,7 +49,7 @@ function UserLayout({
 
   return (
     <div>
-      <HeaderBar username={username} setUserName={setUserName} />
+      <HeaderBar username={username} setUserName={setUserName} role={role} />
       <div className="min-h-[calc(100vh-100px)]">{children}</div>
 
       <Footer />

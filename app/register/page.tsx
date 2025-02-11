@@ -26,6 +26,12 @@ function RegisterPage() {
     }));
   };
 
+  const extractFieldFromError = (errorMessage: string): string | null => {
+    const duplicateKeyRegex = /dup key: \{ (.+?): "([^"]+)" \}/;
+    const match = errorMessage.match(duplicateKeyRegex);
+    return match ? `Trường ${match[1]} đã tồn tại: ${match[2]}` : null;
+  };
+
   const handleRegister = async () => {
     try {
       if (formData.password !== formData.confirmPassword) {
@@ -69,7 +75,11 @@ function RegisterPage() {
         setOpenSnackbar(true);
       }
     } catch (error: any) {
-      setError(error.response?.data?.message || "Có lỗi xảy ra khi đăng ký");
+      console.log(error);
+      setError(
+        extractFieldFromError(error.response?.data?.message) ||
+          "Có lỗi xảy ra khi đăng ký"
+      );
       setOpenSnackbar(true);
     }
   };
@@ -79,8 +89,8 @@ function RegisterPage() {
   };
 
   return (
-    <div className="bg-gray-200 flex justify-center min-h-[calc(100vh-100px-263px)] py-[30px] items-center">
-      <div className="bg-white min-w-[500px] px-[40px] py-[30px] rounded-md">
+    <div className="flex h-[100vh] bg-login-background bg-center bg-cover items-center">
+      <div className="bg-white min-w-[500px] px-[40px] flex flex-col justify-center py-[30px] h-full rounded-md">
         <div className="flex flex-col items-center">
           <Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
             Đăng ký

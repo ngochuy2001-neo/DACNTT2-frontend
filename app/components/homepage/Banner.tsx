@@ -11,7 +11,6 @@ function Banner() {
         <h2 className="text-[30px] mb-[20px]">
           Tìm được món đồ công nghệ thay đổi cuộc sống
         </h2>
-        <Button variant="contained">Bắt đầu mua sắm</Button>
       </div>
     </div>
   );
