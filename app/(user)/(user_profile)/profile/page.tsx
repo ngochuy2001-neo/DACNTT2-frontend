@@ -1,5 +1,5 @@
 "use client";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Snackbar, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -14,6 +14,12 @@ function ProfilePage() {
   const [email, setEmail] = useState(userData.email);
   const [fullname, setFullname] = useState(userData.fullname);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+
+  const handleCloseSnackbar = () => {
+    setIsSnackbarOpen(false);
+  }
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
@@ -47,6 +53,11 @@ function ProfilePage() {
   const handleChangeUserProfile = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
+
+    if (password !== confirmPassword) {
+      setIsSnackbarOpen(true);
+      return;
+    }
 
     try {
       const response = await axios.put(
@@ -150,6 +161,16 @@ function ProfilePage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <TextField
+              sx={{ width: "40%" }}
+              label="Nhập lại mật khẩu"
+              variant="standard"
+              size="small"
+              type="password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={password !== confirmPassword}
+              helperText={password !== confirmPassword ? "Mật khẩu không khớp" : ""}
+            />
           </div>
         )}
         {editMode ? (
@@ -172,6 +193,13 @@ function ProfilePage() {
           </Button>
         )}
       </div>
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message="Mật khẩu không khớp"
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import Logo from "../../../public/assets/images/OnlineShopLogo.png";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -7,6 +7,7 @@ import Image from "next/image";
 import { AccountCircle } from "@mui/icons-material";
 import { Menu, MenuItem, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 function HeaderBar({
   username,
@@ -25,6 +26,40 @@ function HeaderBar({
     localStorage.removeItem("token");
     router.push("/login");
   };
+
+  const [cartAmount, setCartAmount] = useState(0);
+
+  const checkLogin = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.get(process.env.NEXT_PUBLIC_USER_API_URL + "/users/login/check", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).then(async (res) => {
+        if (res.data.success) {
+          setUserName(res.data.user.username);
+          await axios.get(process.env.NEXT_PUBLIC_PRODUCT_API_URL + "/cart", {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }).then((res) => {
+            setCartAmount(res.data.detail.length);
+          })
+        } else {
+          handleLogout();
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
+
   return (
     <div className="border-b-[2px] h-[100px] border-black px-[75px] flex items-center justify-around">
       <div className="hover:cursor-pointer" onClick={() => router.push("/")}>
@@ -65,22 +100,25 @@ function HeaderBar({
             </p>
           </div>
         ) : (
-          <div className="flex items-center gap-[20px]">
-            <ShoppingCartIcon
-              sx={{
-                ":hover": {
-                  cursor: "pointer",
-                  bgcolor: "black",
-                  color: "white",
-                },
-                p: "5px",
-                width: "34px",
-                height: "34px",
-                borderRadius: "30px",
-                overflow: "visible",
-              }}
-              onClick={() => router.push("/cart")}
-            />
+          <div className="flex items-center gap-[20px] ">
+              <div className="relative">
+                <ShoppingCartIcon
+                  sx={{
+                    ":hover": {
+                      cursor: "pointer",
+                      bgcolor: "black",
+                      color: "white",
+                    },
+                    p: "5px",
+                    width: "34px",
+                    height: "34px",
+                    borderRadius: "30px",
+                    overflow: "visible",
+                  }}
+                  onClick={() => router.push("/cart")}
+                />
+                {/* <div className="text-[12px] absolute top-[-5px] right-[-5px] bg-black text-white rounded-[50%] px-[5px]">{cartAmount}</div> */}
+              </div>
 
             <div className="flex items-center gap-[10px]">
               <div>
