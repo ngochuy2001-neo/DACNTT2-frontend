@@ -408,14 +408,6 @@ function LaptopDetail() {
                             {variants[variantIndex].field?.connectors?.internet}
                           </Typography>
                         </div>
-                        <div className="flex gap-[10px]">
-                          <Typography variant="body1">GPS Support</Typography>
-                          <Typography variant="body1">
-                            {variants[
-                              variantIndex
-                            ].field?.connectors?.gps_support.join(", ")}
-                          </Typography>
-                        </div>
                       </div>
                     </div>
                   </TableCell>
