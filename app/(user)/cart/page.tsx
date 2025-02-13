@@ -19,6 +19,7 @@ import {
   FormControlLabel,
   Radio,
   Snackbar,
+  TextField,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import axios from "axios";
@@ -88,6 +89,18 @@ function CartPage() {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [couponData, setCouponData] = useState<
+    {
+      _id: string;
+      coupon_code: string;
+      discount_amount: number;
+      is_used: boolean;
+      discount_rate: number;
+      expired_at: string;
+    }[]
+  >([]);
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponValid, setCouponValid] = useState<boolean>(false);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -97,6 +110,18 @@ function CartPage() {
 
   const router = useRouter();
 
+  const fetchCoupon = async () => {
+    try {
+      await axios
+        .get(process.env.NEXT_PUBLIC_ORDER_API_URL + "/coupons/")
+        .then((response) => {
+          console.log(response.data.coupons);
+          setCouponData(response.data.coupons);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleRemoveItem = async (variant_id: string) => {
     try {
       const res = await axios.delete(
@@ -129,6 +154,7 @@ function CartPage() {
       `${process.env.NEXT_PUBLIC_ORDER_API_URL}/orders/create`,
       {
         addressId: currentAddressId,
+        couponCode: couponValid ? couponCode : null,
       },
       {
         headers: {
@@ -197,9 +223,28 @@ function CartPage() {
     setCartDetails(res.data.detail);
   };
 
+  const handleCheckCoupon = async () => {
+    console.log(couponCode);
+    console.log(couponData);
+    couponData.filter((item) => {
+      if (item.coupon_code === couponCode) {
+        console.log("check");
+        if (item.is_used) {
+          setOpenSnackbar(true);
+          setSnackbarMessage("Mã giảm giá đã hết hạn");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarMessage("Mã giảm giá hợp lệ");
+          setCouponValid(true);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     checkUser();
     fetchAddress();
+    fetchCoupon();
   }, []);
 
   return (
@@ -312,38 +357,58 @@ function CartPage() {
             </RadioGroup>
           </FormControl>
         </div>
-
-        <div className="bg-white w-full shadow-md p-4 h-fit">
-          <Typography variant="h6" fontWeight="bold">
-            Thống kê đơn hàng
-          </Typography>
-          <div className="flex flex-col justify-between h-full">
-            <div className="mt-4 flex justify-between">
-              <Typography>Số lượng sản phẩm: </Typography>
-              <Typography>
-                {cartDetails.reduce((total, item) => total + item.quantity, 0)}
-              </Typography>
-            </div>
-            <Divider />
-            <div className="mt-4 flex justify-between">
-              <Typography>Tổng tiền: </Typography>
-              <Typography>
-                {cartDetails
-                  .reduce((total, item) => total + item.subtotal, 0)
-                  .toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-              </Typography>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button
-                onClick={handleCheckout}
-                sx={{ backgroundColor: "#000", color: "#fff" }}
-                variant="contained"
-              >
-                Thanh toán
-              </Button>
+        <div className="flex flex-col gap-[30px]">
+          <div className="flex gap-[10px]">
+            <TextField
+              label="Mã giảm giá"
+              variant="outlined"
+              sx={{ width: "100%" }}
+              onChange={(e) => setCouponCode(e.target.value)}
+            />
+            <Button
+              onClick={() => handleCheckCoupon()}
+              size="small"
+              variant="contained"
+              color="primary"
+            >
+              Kiểm tra coupon
+            </Button>
+          </div>
+          <div className="bg-white w-full shadow-md p-4">
+            <Typography variant="h6" fontWeight="bold">
+              Thống kê đơn hàng
+            </Typography>
+            <div className="flex flex-col justify-between">
+              <div className="mt-4 flex justify-between">
+                <Typography>Số lượng sản phẩm: </Typography>
+                <Typography>
+                  {cartDetails.reduce(
+                    (total, item) => total + item.quantity,
+                    0
+                  )}
+                </Typography>
+              </div>
+              <Divider />
+              <div className="mt-4 flex justify-between">
+                <Typography>Tổng tiền: </Typography>
+                <Typography>
+                  {cartDetails
+                    .reduce((total, item) => total + item.subtotal, 0)
+                    .toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                </Typography>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Button
+                  onClick={handleCheckout}
+                  sx={{ backgroundColor: "#000", color: "#fff" }}
+                  variant="contained"
+                >
+                  Thanh toán
+                </Button>
+              </div>
             </div>
           </div>
         </div>

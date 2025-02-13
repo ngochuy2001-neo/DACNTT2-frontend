@@ -31,6 +31,24 @@ function CheckoutPage() {
       __v: number;
     }[]
   >([]);
+  const [order, setOrder] = useState<{
+    order_id: string;
+    user_id: string;
+    fullname: string;
+    phone_number: string;
+    address_id: string;
+    total_item: number;
+    total_price: number;
+    delivery_cost: number;
+    discount_amount: number;
+    total_cost: number;
+    status: string;
+    _id: string;
+    coupon_code: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  } | null>(null);
 
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
 
@@ -42,6 +60,7 @@ function CheckoutPage() {
     if (res.data.success) {
       console.log(res.data.order);
       setOrderDetails(res.data.detail);
+      setOrder(res.data.order);
     }
   };
 
@@ -102,15 +121,54 @@ function CheckoutPage() {
                 sx={{ fontWeight: "bold", borderBottom: "none" }}
                 colSpan={2}
               >
-                Tổng tiền
+                Phí vận chuyển
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", borderBottom: "none" }}>
-                {orderDetails
-                  .reduce((acc, item) => acc + item.price, 0)
-                  .toLocaleString("vi-VN", {
-                    currency: "VND",
-                    style: "currency",
-                  })}
+                {order?.delivery_cost.toLocaleString("vi-VN", {
+                  currency: "VND",
+                  style: "currency",
+                })}
+              </TableCell>
+            </TableRow>
+            <TableRow sx={{ borderBottom: "none" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", borderBottom: "none" }}
+                colSpan={2}
+              >
+                Tổng giá trị hàng
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderBottom: "none" }}>
+                {order?.total_price.toLocaleString("vi-VN", {
+                  currency: "VND",
+                  style: "currency",
+                })}
+              </TableCell>
+            </TableRow>
+            <TableRow sx={{ borderBottom: "none" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", borderBottom: "none" }}
+                colSpan={2}
+              >
+                Coupon sử dụng
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", borderBottom: "none" }}>
+                {order?.coupon_code ? order?.coupon_code : "Không sử dụng"}
+              </TableCell>
+            </TableRow>
+            <TableRow sx={{ borderBottom: "none" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", borderBottom: "none" }}
+                colSpan={2}
+              >
+                Tổng tiền thanh toán
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", borderBottom: "none", color: "red" }}
+              >
+                {order?.total_cost.toLocaleString("vi-VN", {
+                  currency: "VND",
+                  style: "currency",
+                })}
               </TableCell>
             </TableRow>
           </TableBody>
