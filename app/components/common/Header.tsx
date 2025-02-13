@@ -32,33 +32,36 @@ function HeaderBar({
   const checkLogin = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.get(process.env.NEXT_PUBLIC_USER_API_URL + "/users/login/check", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then(async (res) => {
-        if (res.data.success) {
-          setUserName(res.data.user.username);
-          await axios.get(process.env.NEXT_PUBLIC_PRODUCT_API_URL + "/cart", {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }).then((res) => {
-            setCartAmount(res.data.detail.length);
-          })
-        } else {
-          handleLogout();
-        }
-      })
+      await axios
+        .get(process.env.NEXT_PUBLIC_USER_API_URL + "/users/login/check", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(async (res) => {
+          if (res.data.success) {
+            setUserName(res.data.user.username);
+            await axios
+              .get(process.env.NEXT_PUBLIC_PRODUCT_API_URL + "/cart", {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+              .then((res) => {
+                setCartAmount(res.data.detail.length);
+              });
+          } else {
+            // handleLogout();
+          }
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     checkLogin();
   }, []);
-
 
   return (
     <div className="border-b-[2px] h-[100px] border-black px-[75px] flex items-center justify-around">
@@ -101,24 +104,24 @@ function HeaderBar({
           </div>
         ) : (
           <div className="flex items-center gap-[20px] ">
-              <div className="relative">
-                <ShoppingCartIcon
-                  sx={{
-                    ":hover": {
-                      cursor: "pointer",
-                      bgcolor: "black",
-                      color: "white",
-                    },
-                    p: "5px",
-                    width: "34px",
-                    height: "34px",
-                    borderRadius: "30px",
-                    overflow: "visible",
-                  }}
-                  onClick={() => router.push("/cart")}
-                />
-                {/* <div className="text-[12px] absolute top-[-5px] right-[-5px] bg-black text-white rounded-[50%] px-[5px]">{cartAmount}</div> */}
-              </div>
+            <div className="relative">
+              <ShoppingCartIcon
+                sx={{
+                  ":hover": {
+                    cursor: "pointer",
+                    bgcolor: "black",
+                    color: "white",
+                  },
+                  p: "5px",
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "30px",
+                  overflow: "visible",
+                }}
+                onClick={() => router.push("/cart")}
+              />
+              {/* <div className="text-[12px] absolute top-[-5px] right-[-5px] bg-black text-white rounded-[50%] px-[5px]">{cartAmount}</div> */}
+            </div>
 
             <div className="flex items-center gap-[10px]">
               <div>

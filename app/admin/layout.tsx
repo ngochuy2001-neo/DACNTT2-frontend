@@ -3,11 +3,9 @@ import React, { useState } from "react";
 import AdminHeader from "../components/admin/AdminHeader";
 import {
   Box,
-  Button,
   Drawer,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
   useTheme,
   Accordion,
@@ -29,6 +27,7 @@ const adminMenuList = [
   { name: "Quản lý thiết bị ", url: "/admin/product" },
   { name: "Quản lý đơn hàng", url: "/admin/order" },
   { name: "Quản lý giao hàng", url: "/admin/shipping" },
+  {name: "Quản lý mã giảm giá", url: "/admin/coupon"}
 ];
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
