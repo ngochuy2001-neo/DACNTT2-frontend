@@ -274,14 +274,14 @@ function LaptopDetail() {
               </Typography>
             </div>
             <Divider />
-            <div className="flex flex-col gap-[10px]">
+            {/* <div className="flex flex-col gap-[10px]">
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 Mô tả sản phẩm
               </Typography>
               <Typography variant="body1">
                 {laptopDetails.description}
               </Typography>
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-col gap-[10px]">
             <div className="grid grid-cols-3 gap-[10px]">
