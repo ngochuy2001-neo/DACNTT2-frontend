@@ -129,28 +129,28 @@ function ProductPage() {
           <div className="grid grid-cols-3 gap-4">
             {products.map((data, index) => (
               <div key={index} className="bg-white p-4 rounded-md">
-                <div>
+                <div className="text-ellipsis">
                   <h2 className="text-2xl font-bold">
                     {data.item.product_name}
                   </h2>
-                  <p>
+                  <p  className="text-ellipsis h-full">
                     <strong>Brand ID:</strong> {data.item.brand_id}
                   </p>
 
-                  <p>
-                    <strong>Description:</strong> {data.item.description}
+                  <p className="text-ellipsis max-h-[300px] overflow-hidden white whitespace-nowrap">
+                    <strong>Mô tả:</strong> {data.item.description}
                   </p>
-                  <p>
-                    <strong>CPU Brand:</strong> {data.item.cpu_brand}
+                  <p className="text-ellipsis h-full">
+                    <strong>Thương hiệu CPU:</strong> {data.item.cpu_brand}
                   </p>
-                  <p>
-                    <strong>VGA Brand:</strong> {data.item.vga_brand}
+                  <p className="text-ellipsis">
+                    <strong>Thương hiệu VGA:</strong> {data.item.vga_brand}
                   </p>
-                  <p>
+                  <p className="text-ellipsis">
                     <strong>Size:</strong> {data.item.size}
                   </p>
-                  <p>
-                    <strong>Feature Image Source:</strong>{" "}
+                  <p className="text-ellipsis">
+                    <strong>Nguồn ảnh:</strong>{" "}
                     {data.item.feature_img_src}
                   </p>
                 </div>
